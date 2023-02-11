@@ -1,8 +1,10 @@
 import pandas as pd
 import plotly.graph_objects as go
 
-def excel_to_sankey_viz(path_to_file, linear = True):
+def excel_to_sankey_viz(path_to_file, count_col, linear = True):
   df = pd.read_excel(path_to_file)
+  count_col = str(count_col)
+  df['count_col'] = df[count_col]
 
   columns = list(df.columns)
 
@@ -14,11 +16,11 @@ def excel_to_sankey_viz(path_to_file, linear = True):
   dfs = []
   for column in columns[2:]:
     i = columns.index(column)+1
-    if column == columns[-1] or column == columns[-2]:
+    if column == columns[-1]:
       break
     else:
       try:
-        dfx = df.groupby([column, columns[i]])[columns[0]].count().reset_index()
+        dfx = df.groupby([column, columns[i]])[df[count_col]].count().reset_index()
         dfx.columns = ['source', 'target', 'count']
         dfs.append(dfx)
       except:
