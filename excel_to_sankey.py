@@ -1,30 +1,28 @@
 import pandas as pd
 import plotly.graph_objects as go
 
-def excel_to_sankey_viz(path_to_file, count_col, linear = True):
+def excel_to_sankey_viz(path_to_file, linear = True):
   df = pd.read_excel(path_to_file)
-  count_col = str(count_col)
-  df['count_col'] = df[count_col]
+  df['count_col'] = [f'count_{x}' for x in range(len(df))]
 
   columns = list(df.columns)
-
-  if linear == True:
+  if linear:
     for col in df.columns:
-        for index, value in enumerate(df[col]):
-            df.at[index, col] = f'{value}_({col})'
+      for index, value in enumerate(df[col]):
+          df.at[index, col] = f'{value}_({col})'
 
   dfs = []
-  for column in columns[2:]:
+  for column in columns:
     i = columns.index(column)+1
-    if column == columns[-1]:
-      break
+    if column == columns[-1] or column == columns[-2] or column == 'count_col':
+      continue
     else:
       try:
-        dfx = df.groupby([column, columns[i]])[df[count_col]].count().reset_index()
+        dfx = df.groupby([column, columns[i]])['count_col'].count().reset_index()
         dfx.columns = ['source', 'target', 'count']
         dfs.append(dfx)
-      except:
-        print('exception')
+      except Exception as e:
+        print(repr(e))
 
   links = pd.concat(dfs, axis=0)
   unique_source_target = list(pd.unique(links[[
@@ -53,4 +51,4 @@ def excel_to_sankey_viz(path_to_file, count_col, linear = True):
     font_size=10)
   fig.show()
 
-excel_to_sankey_viz(path_to_file = '', linear = True)
+excel_to_sankey_viz('Process-Review\\Sample_Data_Set.xlsx', True)
