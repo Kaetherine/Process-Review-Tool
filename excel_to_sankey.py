@@ -1,9 +1,18 @@
 import pandas as pd
 import plotly.graph_objects as go
+import random
+
+def random_color_hex():
+    r = random.randint(0, 255)
+    g = random.randint(0, 255)
+    b = random.randint(0, 255)
+    return f'#{r:02x}{g:02x}{b:02x}'
 
 def excel_to_sankey_viz(path_to_file, linear = True):
   df = pd.read_excel(path_to_file)
   df['count_col'] = [f'count_{x}' for x in range(len(df))]
+  df['color'] = [random_color_hex() for x in range(len(df))]
+  print(df['color'])
 
   columns = list(df.columns)
   if linear:
