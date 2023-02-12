@@ -12,7 +12,6 @@ def excel_to_sankey_viz(path_to_file, linear = True):
   df = pd.read_excel(path_to_file)
   df['count_col'] = [f'count_{x}' for x in range(len(df))]
   df['color'] = [random_color_hex() for x in range(len(df))]
-  print(df['color'])
 
   columns = list(df.columns)
   if linear:
@@ -23,7 +22,7 @@ def excel_to_sankey_viz(path_to_file, linear = True):
   dfs = []
   for column in columns:
     i = columns.index(column)+1
-    if column == columns[-1] or column == columns[-2] or column == 'count_col':
+    if column == columns[-1] or column == columns[-2] or column == 'count_col' and not column == 'color':
       continue
     else:
       try:
@@ -31,7 +30,7 @@ def excel_to_sankey_viz(path_to_file, linear = True):
         dfx.columns = ['source', 'target', 'count']
         dfs.append(dfx)
       except Exception as e:
-        print(repr(e))
+        print(f'columnname: {column}\n{repr(e)}')
 
   links = pd.concat(dfs, axis=0)
   unique_source_target = list(pd.unique(links[[
