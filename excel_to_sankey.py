@@ -1,8 +1,7 @@
 import pandas as pd
 import plotly.graph_objects as go
 import random
-import dash
-# from dash import Dash, dcc, html, Input, Output
+from dash import Dash, dcc, html, Input, Output
 
 def random_color_hex():
     r = random.randint(0, 255)
@@ -10,7 +9,7 @@ def random_color_hex():
     b = random.randint(0, 255)
     return f'#{r:02x}{g:02x}{b:02x}'
 
-df = pd.read_excel('Process-Review\\Sample_Data_Set.xlsx')
+df = pd.read_excel('Sample_Data_Set.xlsx')
 df['count_col'] = [f'count_{x}' for x in range(len(df))]
 # df['color'] = [random_color_hex() for x in range(len(df))]
 
@@ -57,42 +56,19 @@ fig = go.Figure(data=[go.Sankey(
       value = links_dict['count']
   ))])
 
-fig.update_layout(
-  title_text='Draft: Process Review Tool',
-  font_size=10)
+# fig.update_layout(
+#   title_text='Draft: Process Review Tool',
+#   font_size=10)
 # fig.show()
-
-from dash import Dash, dcc, html, Input, Output
 
 app = Dash(__name__)
 app.layout = html.Div([
     dcc.Dropdown(list(df.columns), 'NYC', id='demo-dropdown', multi=True),
     html.Div(id='dd-output-container'),
     dcc.Graph(
-    figure={
-      'data': [
-        go.Sankey(
-          node = dict(
-            pad = 15,
-            thickness = 20,
-            line = dict(color = "black", width = 0.1),
-            label = unique_source_target,
-            color = '#D04A02'
-          ),
-          link = dict(
-            source = links_dict['source'],
-            target = links_dict['target'],
-            value = links_dict['count'],
-            )
-            )
-            ],
-            'layout': {
-            'title': 'Dash Data Visualization'
-            }
-            }
+    figure=fig
             )
           ])
-
 
 @app.callback(
     Output('dd-output-container', 'children'),
