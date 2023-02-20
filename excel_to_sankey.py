@@ -59,4 +59,4 @@ def excel_to_sankey_viz(path_to_file, linear = True):
     font_size=10)
   fig.show()
 
-excel_to_sankey_viz('Process-Review\\Sample_Data_Set.xlsx', True)
+excel_to_sankey_viz('Sample_Data_Set.xlsx', True)
