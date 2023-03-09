@@ -39,137 +39,141 @@ app.layout = html.Div([
         multiple=True
     ),
     html.Div(id='output-data-upload'),
+    dcc.Dropdown(
+        value='Borough',
+        id='demo-dropdown',
+        style = {
+        'margin-top': '1.8%',
+        'margin-left': '2.5%',
+        'width': '95%',
+        },
+        multi=True,
+        placeholder='Select the columns you want to visualize'
+    ),
+    html.Div(id='dd-output-container'),
+    dcc.Graph(
+        id="graph",
+        # set the initial figure to an empty Sankey diagram
+        figure={'data': [], 'layout': {'title': 'Sankey Diagram'}}
+    ),
 ])
 
-def parse_contents(contents, filename, date):
-    content_type, content_string = contents.split(',')
-
-    decoded = base64.b64decode(content_string)
-    try:
-        if 'csv' in filename:
-            # Assume that the user uploaded a CSV file
-            df = pd.read_csv(
-                io.StringIO(decoded.decode('utf-8')))
-        elif 'xls' in filename:
-            # Assume that the user uploaded an excel file
-            df = pd.read_excel(io.BytesIO(decoded))
-    except Exception as e:
-        print(e)
-        return html.Div([
-            'There was an error processing this file.'
-        ])
-    
-    dropdown_options = [{'label': col, 'value': col} for col in df.columns]
-    return html.Div([
-        dcc.Dropdown(
-            id='demo-dropdown',
-            style = {
-            'margin-top': '1.8%',
-            'margin-left': '2.5%',
-            'width': '95%',
-            },
-            options=dropdown_options,
-            multi=True,
-            placeholder='Select the columns you want to visualize'
-        ),
-        html.Div(id='dd-output-container'),
-        dcc.Graph(id="graph"),
-        dash_table.DataTable(
-        
-            id='datatable-interactivity',
-        columns=[{
-          "name": i,
-          "id": i,
-          "selectable": True,
-          "deletable": True
-          } for i in df.columns
-        ],
-        data=df.to_dict('records'),
-        editable=True,
-        filter_action="native",
-        sort_action="native",
-        sort_mode="multi",
-        column_selectable="multi",
-        selected_columns=[],
-        selected_rows=[],
-        page_action="native",
-        page_current= 0,
-        page_size= 10,
-        style_table={
-          'margin-left': '5%',
-          'width': '90%',
-          # 'font-family': 'Arial'
-        }
-            
-        ),
-        html.Hr(),  # horizontal line
-
-        # For debugging, display the raw contents provided by the web browser
-        html.Div('Impressum'),
-        
-  ])
-@app.callback(Output('output-data-upload', 'children'),
-              # Output('dd-output-container', 'children'),
-              Input('upload-data', 'contents'),
-              # Input('demo-dropdown', 'value'),
-              State('upload-data', 'filename'),
-              State('upload-data', 'last_modified'))
-
-def update_output(list_of_contents, list_of_names, list_of_dates):
-    if list_of_contents is not None:
-        children = [
-            parse_contents(c, n, d) for c, n, d in
-            zip(list_of_contents, list_of_names, list_of_dates)]
-        return children
-
-def display_sankey(value, linear=True):
-    df = df[value] # nur die ausgewählten Spalten des DataFrames verwenden
-    
-    df['count_col'] = [f'count_{x}' for x in range(len(df))]
-    columns = list(df.columns)
-
-    if linear:
-        for col in df.columns:
-            for index, value in enumerate(df[col]):
-                df.at[index, col] = f'{col}: {value}'
-
-    dfs = []
-    for column in columns:
-        i = columns.index(column)+1
-        if column == columns[-1] or column == columns[-2] or column == 'count_col' and not column == 'color':
-            continue
-        else:
+@app.callback(
+    Output('graph', 'figure'),
+    Input('demo-dropdown', 'value'),
+    State('output-data-upload', 'children'),
+    State('output-data-upload', 'filename'),
+    State('output-data-upload', 'last_modified')
+)
+def update_figure(selected_cols, list_of_contents, list_of_names, list_of_dates):
+    df = pd.DataFrame()
+    if list_of_contents:
+        for c, n in zip(list_of_contents, list_of_names):
+            content_type, content_string = c.split(',')
+            decoded = base64.b64decode(content_string)
             try:
-                dfx = df.groupby([column, columns[i]])['count_col'].count().reset_index()
-                dfx.columns = ['source', 'target', 'count']
-                dfs.append(dfx)
+                if 'csv' in n:
+                    # Assume that the user uploaded a CSV file
+                    df_file = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+                elif 'xls' in n:
+                    # Assume that the user uploaded an excel file
+                    df_file = pd.read_excel(io.BytesIO(decoded))
+                df = pd.concat([df, df_file])
             except Exception as e:
-                print(f'columnname: {column}\n{repr(e)}')
-
-    links = pd.concat(dfs, axis=0)
-    unique_source_target = list(pd.unique(links[[
-        'source', 'target']].values.ravel('K')))
-    mapping_dict = {k: v for v, k in enumerate(unique_source_target)}
-    links['source'] = links['source'].map(mapping_dict)
-    links['target'] = links['target'].map(mapping_dict)
-    links_dict = links.to_dict(orient='list')
-
-    fig = go.Figure(data=[go.Sankey(
-        node = dict(
-        pad = 15,
-        thickness = 20,
-        line = dict(color = '#D04A02', width = 0.1),
-        label = unique_source_target,
-        color = '#D04A02'
-        ),
-        link = dict(
-        # color = '#707070',
-        source = links_dict['source'],
-        target = links_dict['target'],
-        value = links_dict['count'],
-    ))])
-
+                print(e)
+                return html.Div([
+                    'There was an error processing this file.'
+                ])
+    # generate the Sankey diagram using the selected columns
+    data = generate_sankey(df, selected_cols)
+    # create a plotly figure object
+    fig = {'data': [data], 'layout': {'title': 'Sankey Diagram'}}
     return fig
+
+
+def generate_sankey(df, cols):
+    nodes = []
+    link_sources = []
+    link_targets = []
+    link_values = []
+    for col in cols:
+        nodes.extend(df[col].unique())
+        for i in range(len(df[col])-1):
+            link_sources.append(df[col][i])
+            link_targets.append(df[col][i+1])
+            link_values.append(1)
+    nodes = list(set(nodes))
+    data = dict(
+        type='sankey',
+        node=dict(
+          pad=15,
+          thickness=20,
+          line=dict(color="black", width=0.5),
+          label=nodes
+        ),
+        link=dict(
+          source=link_sources,
+          target=link_targets,
+          value=link_values
+        ),
+    )
+    return data
+
+# def parse_contents(contents, filename, date):
+#     content_type, content_string = contents.split(',')
+
+#     decoded = base64.b64decode(content_string)
+#     try:
+#         if 'csv' in filename:
+#             # Assume that the user uploaded a CSV file
+#             df = pd.read_csv(
+#                 io.StringIO(decoded.decode('utf-8')))
+#         elif 'xls' in filename:
+#             # Assume that the user uploaded an excel file
+#             df = pd.read_excel(io.BytesIO(decoded))
+#     except Exception as e:
+#         print(e)
+#         return html.Div([
+#             'There was an error processing this file.'
+#         ])
+    
+#     dropdown_options = [
+#         {'label': col, 'value': col} for col in df.columns
+#         ]
+#     return html.Div([
+#         dcc.Dropdown(
+#             value='Borough',
+#             # disabled = 'False',
+#             search_value = '',
+#             clearable = True,
+#             id='demo-dropdown',
+#             style = {
+#             'margin-top': '1.8%',
+#             'margin-left': '2.5%',
+#             'width': '95%',
+#             },
+#             options=dropdown_options,
+#             multi=True,
+#             placeholder='Select the columns you want to visualize'
+#         ),
+#         html.Div(id='dd-output-container'),
+#         dcc.Graph(
+#             id="graph",
+#             # set the initial figure to an empty Sankey diagram
+#             figure={'data': [], 'layout': {'title': 'Sankey Diagram'}}
+#         ),
+#     ])
+
+# @app.callback(
+#     Output('graph', 'figure'),
+#     Input('demo-dropdown', 'value'),
+# )
+# def update_figure(selected_cols):
+#     # generate the Sankey diagram using the selected columns
+#     data = generate_sankey(df, selected_cols)
+#     # create a plotly figure object
+#     fig = {'data': [data], 'layout': {'title': 'Sankey Diagram'}}
+#     return fig
 
 if __name__ == '__main__':
     app.run_server(debug=True)
