@@ -1,82 +1,128 @@
-from dash import Dash, dcc, html, Input, Output
-import plotly.graph_objects as go
-import pandas as pd
+import base64
+import io
 
-df = pd.read_excel('Sample_Data_Set.xlsx')
+from dash import Dash, dcc, html, Input, Output, dash_table
+from dash.dependencies import Input, Output, State
+from dash import dcc, html, dash_table
+import pandas as pd
+import plotly.graph_objects as go
 
 app = Dash(__name__)
 
 app.layout = html.Div([
     html.H2(
-        'Process Review Tool',
+        'mäander',
         style={
             'color': '#757575',
             'margin-left': '5%',
-            'margin-top': '5%',
-            'font-family': 'Helvetica Neue',
+            'margin-top': '3%',
+            # 'font-family': 'Arial',
         }
     ),
-    dcc.Dropdown(
+    dcc.Upload(
+        id='upload-data',
+        children=html.Div([
+            'Drag and Drop or ',
+            html.A('Select Files')
+        ]),
+        style={
+            'width': '90%',
+            'height': '5%',
+            'lineHeight': '60px',
+            'borderWidth': '1px',
+            'borderStyle': 'dashed',
+            'borderRadius': '5px',
+            'textAlign': 'center',
+            'margin-left': '5%'
+                },
+        # Allow multiple files to be uploaded
+        multiple=True
+    ),
+    html.Div(id='output-data-upload'),
+])
+
+def parse_contents(contents, filename, date):
+    content_type, content_string = contents.split(',')
+
+    decoded = base64.b64decode(content_string)
+    try:
+        if 'csv' in filename:
+            # Assume that the user uploaded a CSV file
+            df = pd.read_csv(
+                io.StringIO(decoded.decode('utf-8')))
+        elif 'xls' in filename:
+            # Assume that the user uploaded an excel file
+            df = pd.read_excel(io.BytesIO(decoded))
+    except Exception as e:
+        print(e)
+        return html.Div([
+            'There was an error processing this file.'
+        ])
+    return html.Div([
+        dcc.Dropdown(
         style = {
             'margin-top': '1.8%',
             'margin-left': '2.5%',
             'width': '95%',
         },
-        id='df-dropdown',
-        options=[{'label': i, 'value': i} for i in df.columns.unique()],
+        id='demo-dropdown',
         multi=True, 
         placeholder='Select the columns you want to visualize'
-    ),
-    html.Div(id='output-container'),
-    dcc.Graph(id="graph",),
-])
-
-@app.callback(
-    Output('graph', 'figure'),
-    Input("df-dropdown", "value"))
-def update_output(value):
-    df['count_col'] = [f'count_{x}' for x in range(len(df))]
-    columns = list(df.columns)
-
-    dfs = []
-    for column in columns:
-        i = columns.index(column)+1
-        if column == columns[-1] or column == columns[-2] or column == 'count_col' and not column == 'color':
-            continue
-        else:
-            try:
-                dfx = df.groupby([column, columns[i]])['count_col'].count().reset_index()
-                dfx.columns = ['source', 'target', 'count']
-                dfs.append(dfx)
-            except Exception as e:
-                print(f'columnname: {column}\n{repr(e)}')
-
-    links = pd.concat(dfs, axis=0)
-    unique_source_target = list(pd.unique(links[[
-        'source', 'target']].values.ravel('K')))
-    mapping_dict = {k: v for v, k in enumerate(unique_source_target)}
-    links['source'] = links['source'].map(mapping_dict)
-    links['target'] = links['target'].map(mapping_dict)
-    links_dict = links.to_dict(orient='list')
-
-    fig = go.Figure(data=[go.Sankey(
-        node = dict(
-        pad = 15,
-        thickness = 20,
-        line = dict(color = '#D04A02', width = 0.1),
-        label = unique_source_target,
-        color = '#D04A02'
         ),
-        link = dict(
-        # color = '#707070',
-        source = links_dict['source'],
-        target = links_dict['target'],
-        value = links_dict['count'],
-    ))])
+        html.Div(id='dd-output-container'),
+        dcc.Graph(id="graph",),
 
-    return value
+        dash_table.DataTable(
+        
+            id='datatable-interactivity',
+        columns=[{
+          "name": i,
+          "id": i,
+          "selectable": True,
+          "deletable": True
+          } for i in df.columns
+        ],
+        data=df.to_dict('records'),
+        editable=True,
+        filter_action="native",
+        sort_action="native",
+        sort_mode="multi",
+        column_selectable="multi",
+        selected_columns=[],
+        selected_rows=[],
+        page_action="native",
+        page_current= 0,
+        page_size= 10,
+        style_table={
+          'margin-left': '5%',
+          'width': '90%',
+          # 'font-family': 'Arial'
+        }
+            
+        ),
+        html.Hr(),  # horizontal line
 
-def display_sankey(value, linear = True):
+        # For debugging, display the raw contents provided by the web browser
+        html.Div('Impressum'),
+        
+  ])
+@app.callback(Output('output-data-upload', 'children'),
+              # Output('dd-output-container', 'children'),
+              Input('upload-data', 'contents'),
+              # Input('demo-dropdown', 'value'),
+              State('upload-data', 'filename'),
+              State('upload-data', 'last_modified'))
+
+def update_output(list_of_contents, list_of_names, list_of_dates):
+    if list_of_contents is not None:
+        children = [
+            parse_contents(c, n, d) for c, n, d in
+            zip(list_of_contents, list_of_names, list_of_dates)]
+        return children
+
+def display_sankey(value, linear=True):
+    df = df[value] # nur die ausgewählten Spalten des DataFrames verwenden
+    
     df['count_col'] = [f'count_{x}' for x in range(len(df))]
     columns = list(df.columns)
 
@@ -123,4 +169,7 @@ def display_sankey(value, linear = True):
 
     return fig
 
-app.run_server(debug=True)
+if __name__ == '__main__':
+    app.run_server(debug=True)
+
+# app.run_server(debug=True)
