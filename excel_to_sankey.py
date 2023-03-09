@@ -58,20 +58,22 @@ def parse_contents(contents, filename, date):
         return html.Div([
             'There was an error processing this file.'
         ])
+    
+    dropdown_options = [{'label': col, 'value': col} for col in df.columns]
     return html.Div([
         dcc.Dropdown(
-        style = {
+            id='demo-dropdown',
+            style = {
             'margin-top': '1.8%',
             'margin-left': '2.5%',
             'width': '95%',
-        },
-        id='demo-dropdown',
-        multi=True, 
-        placeholder='Select the columns you want to visualize'
+            },
+            options=dropdown_options,
+            multi=True,
+            placeholder='Select the columns you want to visualize'
         ),
         html.Div(id='dd-output-container'),
-        dcc.Graph(id="graph",),
-
+        dcc.Graph(id="graph"),
         dash_table.DataTable(
         
             id='datatable-interactivity',
