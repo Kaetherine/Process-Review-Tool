@@ -1,9 +1,9 @@
 import base64
 import io
 
-from dash import Dash, dcc, html, Input, Output, dash_table
-from dash.dependencies import Input, Output, State
-from dash import dcc, html, dash_table
+from dash import Dash, dcc, html, Input, Output, dash_table, State
+#from dash.dependencies import Input, Output, State
+#from dash import dcc, html, dash_table
 import pandas as pd
 import plotly.graph_objects as go
 
@@ -91,7 +91,7 @@ def update_output(list_of_contents, list_of_names, list_of_dates):
         return children
 
 def display_sankey(value, linear=True):
-    df = df[value] # nur die ausgewählten Spalten des DataFrames verwenden
+    df = pd.DataFrame[value] # nur die ausgewählten Spalten des DataFrames verwenden
     
     df['count_col'] = [f'count_{x}' for x in range(len(df))]
     columns = list(df.columns)

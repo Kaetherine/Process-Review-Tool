@@ -1,8 +1,13 @@
 import dash
-import dash_core_components as dcc
-import dash_html_components as html
 import pandas as pd
 import plotly.express as px
+
+import pandas as pd
+import plotly.graph_objects as go
+import random
+import dash
+import openpyxl
+from dash import Dash, dcc, html, Input, Output
 
 app = dash.Dash()
 
@@ -35,16 +40,10 @@ if __name__ == '__main__':
     app.run_server(debug=True)
 
 
-import pandas as pd
-import plotly.graph_objects as go
-import random
-import dash
-import openpyxl
-from dash import Dash, dcc, html, Input, Output
 
 # from dash import Dash, dcc, html, Input, Output
 
- dcc.Dropdown(
+dcc.Dropdown(
         list(df.columns),
         'NYC',
         id='demo-dropdown',
