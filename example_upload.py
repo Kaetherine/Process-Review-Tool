@@ -1,23 +1,16 @@
 import base64
-import datetime
 import io
 import dash
-from dash.dependencies import Input, Output, State
-from dash import dcc, html, dash_table
-import pandas as pd
+from dash import dcc, html, Input, Output, Dash
 import plotly.graph_objs as go
 from controller import *
 
-
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 df = {}
-options = []
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-server = app.server
+available_cols = []
+selected_cols = []
+app = Dash(__name__)
 
-
-app.layout = html.Div(
-    [
+app.layout = html.Div(className='app-body', children=[
         dcc.Upload(
             id="upload-data",
             children=html.Div(["Drag and Drop or ", html.A("Select Files")]),
@@ -31,61 +24,122 @@ app.layout = html.Div(
                 "textAlign": "center",
                 "margin": "10px",
             },
-            # Allow multiple files to be uploaded
             multiple=True,
         ),
-        html.Div([
-            html.Label('Select columns'),
-            dcc.Dropdown(
-                id='dropdown',
-                options=[{'label': opt, 'value': opt} for opt in options],
-                value=options[0],
-                multi=True
+        html.Div(className="row", children=[
+            html.Div(
+                [html.Label('Select source columns'),
+                 dcc.Checklist(
+                     id='selection-source',
+                     options=[{'label': opt, 'value': opt} for opt in available_cols],
+                     value=[]
+                 ),
+                 ],
+                id='selection-source-container',
+                style=dict(display='none'),
+                className="four columns pretty_container"
             ),
-            ],style={'width': '20%', 'display': 'inline-block'}
-        ),
-        html.Div([
-            dcc.Checklist(
-                id='selection',
-                options=[{'label': opt, 'value': opt} for opt in options],
-                value=options
+            html.Div(
+                [html.Label('Select target column'),
+                 dcc.RadioItems(
+                     id='selection-target',
+                     options=[{'label': opt, 'value': opt} for opt in available_cols],
+                     value=''
+                 ),
+                 ],
+                id='selection-target-container',
+                style=dict(display='none'),
+                className="four columns pretty_container"
             ),
-            ]),
-
-        html.Button('Submit', id='submit', n_clicks=0),
-        html.Div(dcc.Input(id='input-on-submit', type='text')),
-        dcc.Graph(id="MyGraph")
+        ]),
+        html.Button('Submit', id='submit', n_clicks=0, style=dict(display='none')),
+        dcc.Graph(id="sankey")
     ]
 )
 
 
 @app.callback(
-    Output("selection", "options"),
+    Output("selection-source-container", "style"),
     [Input("upload-data", "contents"),
      Input("upload-data", "filename")]
 )
-def update_df(contents, filename):
+def upload_callback(contents, filename):
     global df
-    global options
-    opts = [' ']
     if contents:
         contents = contents[0]
         filename = filename[0]
         df = parse_data(contents, filename)
-        options = list(df.columns)
-        print(options)
-        opts = [{'label': opt, 'value': opt} for opt in options]
-    return opts
+        show = len(df) > 2
+        if show:
+            return dict()
+    return dict(display='none')
+
 
 @app.callback(
-    Output('MyGraph', 'figure'),
-    Input('submit', 'n_clicks'),
-    State('input-on-submit', 'value')
+    Output("selection-source", "options"),
+    [Input("selection-source-container", "style")]
 )
-def update_graph(a, b):
+def available_options_changed_callback(style):
+    opts = []
+    if 'display' in style.keys():
+        return opts
+    available_cols = list(df.columns)
+    print(available_cols)
+    opts = [{'label': opt, 'value': opt} for opt in available_cols]
+    return opts
+
+
+@app.callback(
+    Output("selection-target-container", "style"),
+    [Input("selection-source", "value")]
+)
+def selected_cols_changed_callback(value):
+    #global selected_cols
+    #selected_cols = value
+    #print(selected_cols)
+    show = len(value) > 1
+    if show:
+        return dict()
+    return dict(display='none')
+
+
+@app.callback(
+    Output("selection-target", "options"),
+    [Input("selection-target-container", "style")]
+)
+def show_target_options_changed_callback(style):
+    opts = []
+    if 'display' in style.keys():
+        return opts
+    available_cols = list(df.columns)
+    print(available_cols)
+    opts = [{'label': opt, 'value': opt} for opt in available_cols]
+    return opts
+
+
+@app.callback(
+    Output("submit", "style"),
+    [Input("selection-target", "value")]
+)
+def select_all_none(value):
+    #global selected_cols
+    #selected_cols = value
+    #print(selected_cols)
+    show = len(value) == 1
+    if show:
+        return dict()
+    return dict(display='none')
+
+
+@app.callback(
+    Output('sankey', 'figure'),
+    [Input("selection-source", "value"), Input("selection-target", "value")]
+)
+def update_graph(source, target):
     global df
-    if len(df) > 0:
-        fig = gen_sankey(df, cols=['CPU', 'GPU', 'RAM', 'gb memory'], value_cols='Price')
+    cols_selcted = len(source)
+    if 1 < cols_selcted < 6 and target != '':
+        fig = gen_sankey(df, cols=source, value_cols=target)
         return fig
     fig = go.Figure()
     return fig
@@ -100,23 +154,12 @@ def parse_data(contents, filename):
     except Exception as e:
         print(e)
         return html.Div(["There was an error processing this file."])
-
     return None
 
 
-"""
-@app.callback(
-    Output("MyGraph", "figure"),
-    [Input("submit-selection", "contents")]
-)
-def update_graph():
-    global df
-    if len(df) > 0:
-        fig = gen_sankey(df, cols=['CPU', 'GPU', 'RAM', 'gb memory'], value_cols='Price')
-        return fig
-    fig = go.Figure()
-    return fig
-"""
+def extract_df():
+    new_df = df[selected_cols].copy()
+    return new_df
 
 
 if __name__ == '__main__':
