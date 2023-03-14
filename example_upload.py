@@ -37,7 +37,7 @@ app.layout = html.Div(className='app-body', children=[
         ),
         html.Div(className="row", children=[
             html.Div(
-                [html.Label('Select source columns'),
+                [html.Label('Select columns'),
                  dcc.Dropdown(
                     id='selection-source',
                     style = {
@@ -56,7 +56,7 @@ app.layout = html.Div(className='app-body', children=[
                 className="nine columns pretty_container"
             ),
             html.Div(
-                [html.Label('Select target column'),
+                [html.Label('Select values from last column'),
                  dcc.Dropdown(
                     id='selection-target',
                     style = {
@@ -75,7 +75,7 @@ app.layout = html.Div(className='app-body', children=[
                 className="three columns pretty_container"
             ),
         ]),
-        html.Button('Refresh', id='submit', n_clicks=0, style=dict(display='none')),
+        # html.Button('Refresh', id='submit', n_clicks=0, style=dict(display='none')),
         dcc.Graph(id="sankey")
     ]
 )
@@ -128,7 +128,7 @@ def selected_columns_changed_callback(value):
     print('selected_columns_changed_callback')
     #global selected_columns
     #selected_columns = value
-    #print(selected_columns)
+    print(selected_columns)
     show = len(value) > 1
     if show:
         return dict()
@@ -147,7 +147,7 @@ def show_target_options_changed_callback(style):
     if 'display' in style.keys():
         return opts
     available_columns = list(df.columns)
-    # print(available_columns)
+    print(available_columns)
     opts = [{'label': opt, 'value': opt} for opt in available_columns]
     return opts
 
@@ -175,6 +175,8 @@ def update_graph(source, target):
     print('update_graph')
     global df
     fig = gen_sankey(df, source_columns=source, target_column=target)
+    print('source:',source, '\n')
+    print('target', target, '\n')
     return fig
 # def update_graph(source, target):
 #     print('update_graph')

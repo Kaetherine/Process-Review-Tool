@@ -6,12 +6,11 @@ import pandas as pd
 import plotly.graph_objs as go
 
 def gen_sankey(df, source_columns, target_column, linear=True, title='Sankey Diagram'):
-    # Add a count column to the dataframe
-    # print('\n', type(df))
+    print('source_columns:', source_columns, '\n')
+    source_columns.append(source_columns[-1])
+
     df['count_col'] = [f'count_{x}' for x in range(len(df))]
-    # df = pd.DataFrame(df)
-    # print('\n', type(df))
-    # Convert categorical columns to linear format
+ 
     if linear:
         for col in list(df.columns):
             for index, value in enumerate(df[col]):
