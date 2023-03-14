@@ -29,11 +29,18 @@ app.layout = html.Div(className='app-body', children=[
         html.Div(className="row", children=[
             html.Div(
                 [html.Label('Select source columns'),
-                 dcc.Checklist(
-                     id='selection-source',
-                     options=[{'label': opt, 'value': opt} for opt in available_columns],
-                     value=[]
-                 ),
+                 dcc.Dropdown(
+                    id='selection-source',
+                    style = {
+                    'margin-top': '1.8%',
+                    'margin-left': '2.5%',
+                    'width': '95%',
+                    },
+                    options=[{'label': opt, 'value': opt} for opt in available_columns],
+                    multi=True,
+                    placeholder='Select the columns you want to visualize',
+                    value=[]
+                ),
                  ],
                 id='selection-source-container',
                 style=dict(display='none'),
@@ -41,18 +48,25 @@ app.layout = html.Div(className='app-body', children=[
             ),
             html.Div(
                 [html.Label('Select target column'),
-                 dcc.RadioItems(
-                     id='selection-target',
-                     options=[{'label': opt, 'value': opt} for opt in available_columns],
-                     value=''
-                 ),
+                 dcc.Dropdown(
+                    id='selection-target',
+                    style = {
+                    'margin-top': '1.8%',
+                    'margin-left': '2.5%',
+                    'width': '95%',
+                    },
+                    options=[{'label': opt, 'value': opt} for opt in available_columns],
+                    multi=True,
+                    placeholder='Select the columns you want to visualize',
+                    value=''
+                ),
                  ],
                 id='selection-target-container',
                 style=dict(display='none'),
                 className="four columns pretty_container"
             ),
         ]),
-        html.Button('Submit', id='submit', n_clicks=0, style=dict(display='none')),
+        html.Button('Refresh', id='submit', n_clicks=0, style=dict(display='none')),
         dcc.Graph(id="sankey")
     ]
 )
@@ -112,7 +126,7 @@ def show_target_options_changed_callback(style):
     if 'display' in style.keys():
         return opts
     available_columns = list(df.columns)
-    # print(available_columns)
+    print(available_columns)
     opts = [{'label': opt, 'value': opt} for opt in available_columns]
     return opts
 
@@ -148,7 +162,7 @@ def select_all_none(value):
 def update_graph(source, target):
     global df
     columns_selcted = len(source)
-    if 1 < columns_selcted < 30 and target != '':
+    if 1 < columns_selcted < 20 and target != '':
         fig = gen_sankey(df, source_columns=source, target_column=target)
         return fig
     fig = go.Figure()
