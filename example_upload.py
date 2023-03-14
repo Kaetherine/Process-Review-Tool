@@ -122,9 +122,6 @@ def show_target_options_changed_callback(style):
     [Input("selection-target", "value")]
 )
 def select_all_none(value):
-    #global selected_cols
-    #selected_cols = value
-    #print(selected_cols)
     show = len(value) == 1
     if show:
         return dict()

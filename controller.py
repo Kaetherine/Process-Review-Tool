@@ -1,5 +1,5 @@
 import pandas as pd
-
+# contributiony by ...
 
 def gen_sankey(df, cols=None, value_cols='', title='Sankey Diagram'):
     # maximum of 6 value cols -> 6 colors
