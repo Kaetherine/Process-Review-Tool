@@ -6,8 +6,8 @@ import plotly.graph_objs as go
 from controller import *
 
 df = {}
-available_cols = []
-selected_cols = []
+available_columns = []
+selected_columns = []
 app = Dash(__name__)
 
 app.layout = html.Div(className='app-body', children=[
@@ -31,7 +31,7 @@ app.layout = html.Div(className='app-body', children=[
                 [html.Label('Select source columns'),
                  dcc.Checklist(
                      id='selection-source',
-                     options=[{'label': opt, 'value': opt} for opt in available_cols],
+                     options=[{'label': opt, 'value': opt} for opt in available_columns],
                      value=[]
                  ),
                  ],
@@ -43,7 +43,7 @@ app.layout = html.Div(className='app-body', children=[
                 [html.Label('Select target column'),
                  dcc.RadioItems(
                      id='selection-target',
-                     options=[{'label': opt, 'value': opt} for opt in available_cols],
+                     options=[{'label': opt, 'value': opt} for opt in available_columns],
                      value=''
                  ),
                  ],
@@ -83,9 +83,9 @@ def available_options_changed_callback(style):
     opts = []
     if 'display' in style.keys():
         return opts
-    available_cols = list(df.columns)
-    print(available_cols)
-    opts = [{'label': opt, 'value': opt} for opt in available_cols]
+    available_columns = list(df.columns)
+    print(available_columns)
+    opts = [{'label': opt, 'value': opt} for opt in available_columns]
     return opts
 
 
@@ -93,10 +93,10 @@ def available_options_changed_callback(style):
     Output("selection-target-container", "style"),
     [Input("selection-source", "value")]
 )
-def selected_cols_changed_callback(value):
-    #global selected_cols
-    #selected_cols = value
-    #print(selected_cols)
+def selected_columns_changed_callback(value):
+    #global selected_columns
+    #selected_columns = value
+    #print(selected_columns)
     show = len(value) > 1
     if show:
         return dict()
@@ -111,9 +111,9 @@ def show_target_options_changed_callback(style):
     opts = []
     if 'display' in style.keys():
         return opts
-    available_cols = list(df.columns)
-    print(available_cols)
-    opts = [{'label': opt, 'value': opt} for opt in available_cols]
+    available_columns = list(df.columns)
+    print(available_columns)
+    opts = [{'label': opt, 'value': opt} for opt in available_columns]
     return opts
 
 
@@ -134,9 +134,9 @@ def select_all_none(value):
 )
 def update_graph(source, target):
     global df
-    cols_selcted = len(source)
-    if 1 < cols_selcted < 6 and target != '':
-        fig = gen_sankey(df, cols=source, value_cols=target)
+    columns_selcted = len(source)
+    if 1 < columns_selcted < 6 and target != '':
+        fig = gen_sankey(df, columns=source, value_columns=target)
         return fig
     fig = go.Figure()
     return fig
@@ -155,7 +155,7 @@ def parse_data(contents, filename):
 
 
 def extract_df():
-    new_df = df[selected_cols].copy()
+    new_df = df[selected_columns].copy()
     return new_df
 
 
