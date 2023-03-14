@@ -112,7 +112,7 @@ def show_target_options_changed_callback(style):
     if 'display' in style.keys():
         return opts
     available_columns = list(df.columns)
-    print(available_columns)
+    # print(available_columns)
     opts = [{'label': opt, 'value': opt} for opt in available_columns]
     return opts
 
@@ -128,6 +128,19 @@ def select_all_none(value):
     return dict(display='none')
 
 
+# @app.callback(
+#     Output('sankey', 'figure'),
+#     [Input("selection-source", "value"), Input("selection-target", "value")]
+# )
+# def update_graph(source, target):
+#     global df
+#     columns_selcted = len(source)
+#     if 1 < columns_selcted < 6 and target != '':
+#         fig = gen_sankey(df, columns=source, value_columns=target)
+#         return fig
+#     fig = go.Figure()
+#     return fig
+
 @app.callback(
     Output('sankey', 'figure'),
     [Input("selection-source", "value"), Input("selection-target", "value")]
@@ -135,8 +148,8 @@ def select_all_none(value):
 def update_graph(source, target):
     global df
     columns_selcted = len(source)
-    if 1 < columns_selcted < 6 and target != '':
-        fig = gen_sankey(df) #columns=source, value_columns=target)
+    if 1 < columns_selcted < 30 and target != '':
+        fig = gen_sankey(df, source_columns=source, target_column=target)
         return fig
     fig = go.Figure()
     return fig
