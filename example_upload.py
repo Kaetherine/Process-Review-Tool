@@ -141,20 +141,6 @@ def select_all_none(value):
         return dict()
     return dict(display='none')
 
-
-# @app.callback(
-#     Output('sankey', 'figure'),
-#     [Input("selection-source", "value"), Input("selection-target", "value")]
-# )
-# def update_graph(source, target):
-#     global df
-#     columns_selcted = len(source)
-#     if 1 < columns_selcted < 6 and target != '':
-#         fig = gen_sankey(df, columns=source, value_columns=target)
-#         return fig
-#     fig = go.Figure()
-#     return fig
-
 @app.callback(
     Output('sankey', 'figure'),
     [Input("selection-source", "value"), Input("selection-target", "value")]
