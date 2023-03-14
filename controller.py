@@ -1,13 +1,14 @@
 import pandas as pd
 import plotly.graph_objects as go
-# contributiony by ...
 
 import pandas as pd
 import plotly.graph_objs as go
 
 def gen_sankey(df, source_columns, target_column, linear=True, title='Sankey Diagram'):
-    print('source_columns:', source_columns, '\n')
+    # print('source_columns:', source_columns, '\n')
     source_columns.append(source_columns[-1])
+    target_column = source_columns[-1]
+    # print('target_columns:', target_column, '\n')
 
     df['count_col'] = [f'count_{x}' for x in range(len(df))]
  

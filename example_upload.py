@@ -172,11 +172,11 @@ def select_all_none(value):
 
 # --------------------------------------------------------------------------- 4
 def update_graph(source, target):
-    print('update_graph')
+    print('\n','UPDATE GRAPH:')
     global df
-    fig = gen_sankey(df, source_columns=source, target_column=target)
+    fig = gen_sankey(df, source_columns=source, target_column=source)
     print('source:',source, '\n')
-    print('target', target, '\n')
+    print('target:', target, '\n')
     return fig
 # def update_graph(source, target):
 #     print('update_graph')
