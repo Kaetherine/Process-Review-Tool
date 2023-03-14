@@ -136,7 +136,7 @@ def update_graph(source, target):
     global df
     columns_selcted = len(source)
     if 1 < columns_selcted < 6 and target != '':
-        fig = gen_sankey(df, columns=source, value_columns=target)
+        fig = gen_sankey(df) #columns=source, value_columns=target)
         return fig
     fig = go.Figure()
     return fig
