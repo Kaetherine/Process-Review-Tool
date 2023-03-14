@@ -11,11 +11,20 @@ selected_columns = []
 app = Dash(__name__)
 
 app.layout = html.Div(className='app-body', children=[
+        html.Img(
+        src='assets\pwc-logo.png',
+        alt='PwC Logo',
+        style={'width':'60px',
+                'position': 'fixed',
+                'top': '2%',
+                'right': '4.2%',
+                }
+            ),
         dcc.Upload(
             id="upload-data",
             children=html.Div(["Drag and Drop or ", html.A("Select Files")]),
             style={
-                "width": "100%",
+                "width": "98%",
                 "height": "60px",
                 "lineHeight": "60px",
                 "borderWidth": "1px",
@@ -44,7 +53,7 @@ app.layout = html.Div(className='app-body', children=[
                  ],
                 id='selection-source-container',
                 style=dict(display='none'),
-                className="four columns pretty_container"
+                className="nine columns pretty_container"
             ),
             html.Div(
                 [html.Label('Select target column'),
@@ -63,7 +72,7 @@ app.layout = html.Div(className='app-body', children=[
                  ],
                 id='selection-target-container',
                 style=dict(display='none'),
-                className="four columns pretty_container"
+                className="three columns pretty_container"
             ),
         ]),
         html.Button('Refresh', id='submit', n_clicks=0, style=dict(display='none')),
@@ -72,12 +81,15 @@ app.layout = html.Div(className='app-body', children=[
 )
 
 
+
 @app.callback(
     Output("selection-source-container", "style"),
     [Input("upload-data", "contents"),
      Input("upload-data", "filename")]
 )
+# --------------------------------------------------------------------------- 1
 def upload_callback(contents, filename):
+    print('upload_callback')
     global df
     if contents:
         contents = contents[0]
@@ -93,12 +105,15 @@ def upload_callback(contents, filename):
     Output("selection-source", "options"),
     [Input("selection-source-container", "style")]
 )
+
+# --------------------------------------------------------------------------- 5
 def available_options_changed_callback(style):
+    print('available_options_changed_callback')
     opts = []
     if 'display' in style.keys():
         return opts
     available_columns = list(df.columns)
-    print(available_columns)
+    # print(available_columns)
     opts = [{'label': opt, 'value': opt} for opt in available_columns]
     return opts
 
@@ -107,7 +122,10 @@ def available_options_changed_callback(style):
     Output("selection-target-container", "style"),
     [Input("selection-source", "value")]
 )
+
+# --------------------------------------------------------------------------- 2, 7
 def selected_columns_changed_callback(value):
+    print('selected_columns_changed_callback')
     #global selected_columns
     #selected_columns = value
     #print(selected_columns)
@@ -121,12 +139,15 @@ def selected_columns_changed_callback(value):
     Output("selection-target", "options"),
     [Input("selection-target-container", "style")]
 )
+
+# --------------------------------------------------------------------------- 6
 def show_target_options_changed_callback(style):
+    print('show_target_options_changed_callback')
     opts = []
     if 'display' in style.keys():
         return opts
     available_columns = list(df.columns)
-    print(available_columns)
+    # print(available_columns)
     opts = [{'label': opt, 'value': opt} for opt in available_columns]
     return opts
 
@@ -135,7 +156,10 @@ def show_target_options_changed_callback(style):
     Output("submit", "style"),
     [Input("selection-target", "value")]
 )
+
+# --------------------------------------------------------------------------- 3
 def select_all_none(value):
+    print('select_all_none')
     show = len(value) == 1
     if show:
         return dict()
@@ -145,17 +169,26 @@ def select_all_none(value):
     Output('sankey', 'figure'),
     [Input("selection-source", "value"), Input("selection-target", "value")]
 )
+
+# --------------------------------------------------------------------------- 4
 def update_graph(source, target):
+    print('update_graph')
     global df
-    columns_selcted = len(source)
-    if 1 < columns_selcted < 20 and target != '':
-        fig = gen_sankey(df, source_columns=source, target_column=target)
-        return fig
-    fig = go.Figure()
+    fig = gen_sankey(df, source_columns=source, target_column=target)
     return fig
+# def update_graph(source, target):
+#     print('update_graph')
+#     global df
+#     # columns_selcted = len(source)
+#     # if 1 < columns_selcted < 100 and target != '':
+#     fig = gen_sankey(df, source_columns=source, target_column=target)
+#     return fig
+#     # fig = go.Figure()
+#     # return fig
 
 
 def parse_data(contents, filename):
+    print('parse_data')
     content_type, content_string = contents.split(",")
     decoded = base64.b64decode(content_string)
     try:
@@ -168,6 +201,7 @@ def parse_data(contents, filename):
 
 
 def extract_df():
+    print('extract_df')
     new_df = df[selected_columns].copy()
     return new_df
 
