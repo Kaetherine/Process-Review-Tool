@@ -1,6 +1,5 @@
 import pandas as pd
 import plotly.graph_objects as go
-
 import pandas as pd
 import plotly.graph_objs as go
 
@@ -62,12 +61,11 @@ def gen_sankey(df, source_columns, target_column, linear=True, title='Sankey Dia
 
     # Define layout
     layout = dict(
-        title=title,
-        font=dict(
-            size=10
-        )
+    title=title,
+    font=dict(
+        size=10
     )
-
+)
     # Create sankey diagram
     fig = dict(data=[data], layout=layout)
 
