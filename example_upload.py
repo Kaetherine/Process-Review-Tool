@@ -1,6 +1,6 @@
 import base64
 import io
-from dash import dcc, html, Input, Output, Dash, dash_table
+from dash import dcc, html, Input, Output, Dash
 from controller import *
 
 df = {}
@@ -134,15 +134,13 @@ def selected_columns_changed_callback(value):
 
 @app.callback(
     Output("selection-target", "options"),
-    [Input("selection-target-container", "style"), Input('sankey', 'last_column_values')]
+    [Input("selection-target-container", "style")]
 )
-
-# --------------------------------------------------------------------------- 6
-def show_target_options_changed_callback(style, last_column_values):
-    # print('show_target_options_changed_callback')
+def show_target_options_changed_callback(style):
     opts = []
     if 'display' in style.keys():
         return opts
+    print(last_column_values)
     opts = [{'label': opt, 'value': opt} for opt in last_column_values]
     return opts
 
@@ -168,11 +166,9 @@ def select_all_none(value):
 # --------------------------------------------------------------------------- 4
 def update_graph(source, filter):
     # print('\n','UPDATE GRAPH:')
-    global df
-    fig, last_column_values = gen_sankey(df, source_columns=source, filter='', linear=False)
-    print('\n', last_column_values)
-    # print('source:',source, '\n')
-    # print('target:', target, '\n')
+    global df, last_column_values
+    fig, last_column_values = gen_sankey(df, source_columns=source, linear=False)
+    last_column_values = last_column_values
     return fig
 
 def parse_data(contents, filename):
