@@ -1,7 +1,4 @@
 import pandas as pd
-import plotly.graph_objects as go
-import pandas as pd
-import plotly.graph_objs as go
 
 def gen_sankey(df, source_columns, target_column, linear=True, title='Sankey Diagram'):
     # print('source_columns:', source_columns, '\n')

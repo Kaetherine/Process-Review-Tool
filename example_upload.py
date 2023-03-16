@@ -7,6 +7,7 @@ df = {}
 available_columns = []
 selected_columns = []
 target_values = []
+
 app = Dash(__name__)
 
 app.layout = html.Div(className='app-body', children=[
