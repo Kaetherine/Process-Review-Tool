@@ -1,11 +1,11 @@
 import pandas as pd
 
-def gen_sankey(df, source_columns, target_column, linear=True, title='Sankey Diagram'):
-    # print('source_columns:', source_columns, '\n')
-    source_columns.append(source_columns[-1])
-    target_column = source_columns[-1]
-    # print('target_columns:', target_column, '\n')
+def gen_sankey(df, source_columns=None, filter=None, linear=True, title='Sankey Diagram'):
+    '''create the sankey diagram based on given params'''
 
+    source_columns.append(source_columns[-1])
+    last_column_values = sorted(df[source_columns[-1]].unique())
+    print('hi')
     df['count_col'] = [f'count_{x}' for x in range(len(df))]
  
     if linear:
@@ -66,4 +66,4 @@ def gen_sankey(df, source_columns, target_column, linear=True, title='Sankey Dia
     # Create sankey diagram
     fig = dict(data=[data], layout=layout)
 
-    return fig
+    return fig, last_column_values

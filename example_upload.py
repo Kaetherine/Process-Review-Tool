@@ -1,11 +1,11 @@
 import base64
 import io
-from dash import dcc, html, Input, Output, Dash
+from dash import dcc, html, Input, Output, Dash, dash_table
 from controller import *
 
 df = {}
 available_columns = []
-selected_columns = []
+last_column_values = []
 target_values = []
 
 app = Dash(__name__)
@@ -56,7 +56,7 @@ app.layout = html.Div(className='app-body', children=[
                 className="nine columns pretty_container"
             ),
             html.Div(
-                [html.Label('Select values from last column'),
+                [html.Label('Filter by'),
                  dcc.Dropdown(
                     id='selection-target',
                     style = {
@@ -64,7 +64,7 @@ app.layout = html.Div(className='app-body', children=[
                     'margin-left': '2.5%',
                     'width': '95%',
                     },
-                    options=[{'label': opt, 'value': opt} for opt in target_values],
+                    options=[{'label': opt, 'value': opt} for opt in last_column_values],
                     multi=True,
                     placeholder='Select the columns you want to visualize',
                     value=''
@@ -134,16 +134,16 @@ def selected_columns_changed_callback(value):
 
 @app.callback(
     Output("selection-target", "options"),
-    [Input("selection-target-container", "style")]
+    [Input("selection-target-container", "style"), Input('sankey', 'last_column_values')]
 )
 
 # --------------------------------------------------------------------------- 6
-def show_target_options_changed_callback(style):
+def show_target_options_changed_callback(style, last_column_values):
     # print('show_target_options_changed_callback')
     opts = []
     if 'display' in style.keys():
         return opts
-    opts = [{'label': opt, 'value': opt} for opt in ['hi', 'hi']]
+    opts = [{'label': opt, 'value': opt} for opt in last_column_values]
     return opts
 
 
@@ -166,10 +166,11 @@ def select_all_none(value):
 )
 
 # --------------------------------------------------------------------------- 4
-def update_graph(source, target):
+def update_graph(source, filter):
     # print('\n','UPDATE GRAPH:')
     global df
-    fig = gen_sankey(df, source_columns=source, target_column=source)
+    fig, last_column_values = gen_sankey(df, source_columns=source, filter='', linear=False)
+    print('\n', last_column_values)
     # print('source:',source, '\n')
     # print('target:', target, '\n')
     return fig
