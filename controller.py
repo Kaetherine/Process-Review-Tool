@@ -5,14 +5,19 @@ def gen_sankey(df, source_columns=None, filter=None, linear=True, title='Sankey 
 
     source_columns.append(source_columns[-1])
     last_column_values = sorted(df[source_columns[-1]].unique())
-    print('hi')
-    df['count_col'] = [f'count_{x}' for x in range(len(df))]
+
+    if filter:
+    #     for value in filter:
+        df = df.loc[df[source_columns[-1]].isin(filter)]
+            # df = df[df[source_columns[-1]] == value]
  
     if linear:
         for col in list(df.columns):
             for index, value in enumerate(df[col]):
                 if str(col) not in str(value):
                     df.at[index, col] = f'{col}:{value}'
+
+    df['count_col'] = [f'count_{x}' for x in range(len(df))]
 
     # Create a list of dataframes with source and target columns
     dfs = []

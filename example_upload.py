@@ -6,7 +6,7 @@ from controller import *
 df = {}
 available_columns = []
 last_column_values = []
-target_values = []
+filter_by = []
 
 app = Dash(__name__)
 
@@ -167,7 +167,9 @@ def select_all_none(value):
 def update_graph(source, filter):
     # print('\n','UPDATE GRAPH:')
     global df, last_column_values
-    fig, last_column_values = gen_sankey(df, source_columns=source, linear=False)
+    fig, last_column_values = gen_sankey(
+        df, source_columns=source, filter=filter, linear=True
+        )
     last_column_values = last_column_values
     return fig
 
