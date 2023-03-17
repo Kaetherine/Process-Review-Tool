@@ -65,7 +65,7 @@ def gen_sankey(df, source_columns=None, filter=None, linear=True, title='Sankey 
     layout = dict(
     title=title,
     font=dict(
-        size=10
+        size=16
     )
 )
     # Create sankey diagram
