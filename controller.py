@@ -48,11 +48,11 @@ def gen_sankey(df, source_columns=None, filter=None, linear=True, title='Sankey 
             pad=15,
             thickness=20,
             line=dict(
-                color='#D04A02',
+                color='#2C66F6',
                 width=0.1
             ),
             label=unique_source_target,
-            color='#D04A02'
+            color='#2C66F6'
         ),
         link=dict(
             source=links_dict['source'],

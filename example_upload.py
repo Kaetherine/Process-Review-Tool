@@ -12,9 +12,9 @@ app = Dash(__name__)
 
 app.layout = html.Div(className='app-body', children=[
         html.Img(
-        src='assets\pwc-logo.png',
+        src='assets\logo.png',
         alt='PwC Logo',
-        style={'width':'60px',
+        style={'width':'160px',
                 'position': 'fixed',
                 'top': '2%',
                 'right': '4.2%',
