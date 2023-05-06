@@ -1,5 +1,8 @@
 # Process-Review-Tool/ Sankey Diagram Generator
 This interactive Sankey diagram generator is a Dash-based Python application that allows users to visualize relationships between columns in their dataset. The application reads Excel files and presents an interactive interface for selecting columns, filtering data, and generating the Sankey diagram.
+![image](https://user-images.githubusercontent.com/81876912/236634270-c1420de9-796c-4c06-9996-45e9544c6695.png)
+![image](https://user-images.githubusercontent.com/81876912/236634251-590d0881-873a-403d-a45f-60fbab678f02.png)
+
 
 # Features
 Upload data files in Excel format.
