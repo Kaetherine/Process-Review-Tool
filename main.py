@@ -145,10 +145,10 @@ def show_target_options_changed_callback(style):
     return opts
 
 
-@app.callback(
-    Output("submit", "style"),
-    [Input("selection-target", "value")]
-)
+# @app.callback(
+#     Output("submit", "style"),
+#     [Input("selection-target", "value")]
+# )
 
 # --------------------------------------------------------------------------- 3
 def select_all_none(value):
@@ -164,13 +164,21 @@ def select_all_none(value):
 )
 
 # --------------------------------------------------------------------------- 4
-def update_graph(source, filter):
+def update_graph(source=None, filter=None):
+    # print(source)
     # print('\n','UPDATE GRAPH:')
     global df, last_column_values
-    fig, last_column_values = gen_sankey(
-        df, source_columns=source, filter=filter, linear=True
-        )
-    last_column_values = last_column_values
+    if not source:
+        try:
+            source = list(df.columns)
+        except AttributeError:
+            pass
+    try:
+        fig, last_column_values = gen_sankey(
+            df, source_columns=source, filter=filter, linear=True
+            )
+    except IndexError:
+        pass
     return fig
 
 def parse_data(contents, filename):
