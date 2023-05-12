@@ -7,6 +7,7 @@ df = {}
 available_columns = []
 last_column_values = []
 filter_by = []
+linear_bool = True
 
 app = Dash(__name__)
 
@@ -165,7 +166,6 @@ def select_all_none(value):
 
 # --------------------------------------------------------------------------- 4
 def update_graph(source=None, filter=None):
-    # print(source)
     # print('\n','UPDATE GRAPH:')
     global df, last_column_values
     if not source:
@@ -175,7 +175,7 @@ def update_graph(source=None, filter=None):
             pass
     try:
         fig, last_column_values = gen_sankey(
-            df, source_columns=source, filter=filter, linear=True
+            df, source_columns=source, filter=filter, linear=linear_bool
             )
     except IndexError:
         pass
