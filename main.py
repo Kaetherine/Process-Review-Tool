@@ -9,7 +9,6 @@ last_column_values = []
 filter_by = []
 linear_bool = True
 
-
 app = Dash(__name__) 
 
 app.layout = html.Div(className='app-body', children=[
@@ -56,6 +55,8 @@ app.layout = html.Div(className='app-body', children=[
                 style=dict(display='none'),
                 className="nine columns pretty_container"
             ),
+        ]),
+        html.Div(className="row", children=[
             html.Div(
                 [html.Label('Filter by'),
                  dcc.Dropdown(
@@ -83,14 +84,13 @@ app.layout = html.Div(className='app-body', children=[
     ]
 )
 
+
 @app.callback(
     Output("selection-source-container", "style"),
     [Input("upload-data", "contents"),
      Input("upload-data", "filename")]
 )
-# --------------------------------------------------------------------------- 1
 def upload_callback(contents, filename):
-    # print('upload_callback')
     global df
     if contents:
         contents = contents[0]
@@ -106,15 +106,11 @@ def upload_callback(contents, filename):
     Output("selection-source", "options"),
     [Input("selection-source-container", "style")]
 )
-
-# --------------------------------------------------------------------------- 5
 def available_options_changed_callback(style):
-    # print('available_options_changed_callback')
     opts = []
     if 'display' in style.keys():
         return opts
     available_columns = list(df.columns)
-    # print(available_columns)
     opts = [{'label': opt, 'value': opt} for opt in available_columns]
     return opts
 
@@ -123,10 +119,7 @@ def available_options_changed_callback(style):
     Output("selection-target-container", "style"),
     [Input("selection-source", "value")]
 )
-
-# --------------------------------------------------------------------------- 2, 7
 def selected_columns_changed_callback(value):
-    # print('selected_columns_changed_callback')
     show = len(value) > 1
     if show:
         return dict()
@@ -141,7 +134,6 @@ def show_target_options_changed_callback(style):
     opts = []
     if 'display' in style.keys():
         return opts
-    # print(last_column_values)
     opts = [{'label': opt, 'value': opt} for opt in last_column_values]
     return opts
 
@@ -150,23 +142,18 @@ def show_target_options_changed_callback(style):
     Output("submit", "style"),
     [Input("selection-target", "value")]
 )
-
-# --------------------------------------------------------------------------- 3
 def select_all_none(value):
-    # print('select_all_none')
     show = len(value) == 1
     if show:
         return dict()
     return dict(display='none')
 
+
 @app.callback(
     Output('sankey', 'figure'),
     [Input("selection-source", "value"), Input("selection-target", "value")]
 )
-
-# --------------------------------------------------------------------------- 4
 def update_graph(source=None, filter=None):
-    # print('\n','UPDATE GRAPH:')
     global df, last_column_values
     if not source:
         try:
@@ -178,8 +165,8 @@ def update_graph(source=None, filter=None):
             )
     return fig
 
+
 def parse_data(contents, filename):
-    # print('parse_data')
     content_type, content_string = contents.split(",")
     decoded = base64.b64decode(content_string)
     try:
@@ -190,7 +177,6 @@ def parse_data(contents, filename):
     except Exception as e:
         print(e)
         return html.Div(["There was an error processing this file."])
-    
 
 if __name__ == '__main__':
     app.run_server(debug=True)
