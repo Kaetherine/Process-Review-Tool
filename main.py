@@ -9,6 +9,7 @@ last_column_values = []
 filter_by = []
 linear_bool = True
 
+
 app = Dash(__name__) 
 
 app.layout = html.Div(className='app-body', children=[
@@ -25,14 +26,13 @@ app.layout = html.Div(className='app-body', children=[
             id="upload-data",
             children=html.Div(["Drag and Drop or ", html.A("Select Files")]),
             style={
-                "width": "98%",
                 "height": "60px",
                 "lineHeight": "60px",
                 "borderWidth": "1px",
                 "borderStyle": "dashed",
                 "borderRadius": "5px",
                 "textAlign": "center",
-                "margin": "10px",
+                "margin-bottom": "20px",
             },
             multiple=True,
         ),
@@ -42,9 +42,9 @@ app.layout = html.Div(className='app-body', children=[
                  dcc.Dropdown(
                     id='selection-source',
                     style = {
-                    'margin-top': '1.8%',
-                    'margin-left': '2.5%',
-                    'width': '95%',
+                    # 'margin-top': '1.8%',
+                    # 'margin-left': '2.5%',
+                    # 'width': '95%',
                     },
                     options=[{'label': opt, 'value': opt} for opt in available_columns],
                     multi=True,
@@ -61,13 +61,13 @@ app.layout = html.Div(className='app-body', children=[
                  dcc.Dropdown(
                     id='selection-target',
                     style = {
-                    'margin-top': '1.8%',
-                    'margin-left': '2.5%',
-                    'width': '95%',
+                    # 'margin-top': '1.8%',
+                    # 'margin-left': '2.5%',
+                    # 'width': '95%',
                     },
                     options=[{'label': opt, 'value': opt} for opt in last_column_values],
                     multi=True,
-                    placeholder='Select the columns you want to visualize',
+                    placeholder='Select the row values you want to include',
                     value=''
                 ),
                  ],
@@ -174,7 +174,7 @@ def update_graph(source=None, filter=None):
         except Exception as e:
             print(e)
     fig, last_column_values = gen_sankey(
-            df, source_columns=source, filter=filter, linear=linear_bool
+            df, source_columns=source, filter=filter, linear=linear_bool, title=df.name
             )
     return fig
 
@@ -184,11 +184,13 @@ def parse_data(contents, filename):
     decoded = base64.b64decode(content_string)
     try:
         if "xlsx" in filename:
-            return pd.read_excel(io.BytesIO(decoded))
+            df = pd.read_excel(io.BytesIO(decoded))
+            df.name = filename
+            return df
     except Exception as e:
         print(e)
         return html.Div(["There was an error processing this file."])
-    return None
+    
 
 if __name__ == '__main__':
     app.run_server(debug=True)
