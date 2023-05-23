@@ -23,7 +23,7 @@ app.layout = html.Div(className='app-body', children=[
             ),
         dcc.Upload(
             id="upload-data",
-            children=html.Div(["Drag and Drop or Blablabla ", html.A("Select Files")]),
+            children=html.Div(["Drag and Drop or ", html.A("Select Files")]),
             style={
                 "width": "98%",
                 "height": "60px",
@@ -78,7 +78,7 @@ app.layout = html.Div(className='app-body', children=[
         ]),
         dcc.Graph(
         id="sankey",
-        style={"height": "10vh"}
+        style={"height": "65vh"}
         )
     ]
 )
