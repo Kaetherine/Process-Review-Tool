@@ -1,17 +1,20 @@
 import base64
 import io
-from dash import dcc, html, Input, Output, Dash
+from dash import dcc, html, Input, Output, Dash, dash_table
 from controller import *
 
-df = {}
+df = pd.DataFrame()
 available_columns = []
 last_column_values = []
 filter_by = []
 linear_bool = True
+dropdowns = []
 
 app = Dash(__name__) 
 
-app.layout = html.Div(className='app-body', children=[
+app.layout = html.Div(
+    
+    className='app-body', children=[
         html.Img(
         src='assets\logo.png',
         alt='PwC Logo',
@@ -56,11 +59,12 @@ app.layout = html.Div(className='app-body', children=[
                 className="twelve columns pretty_container"
             ),
         ]),
+        # html.Div(id='selection-target', children=dropdowns),
         html.Div(className="row", children=[
             html.Div(
                 [html.Label('Filter by'),
                  dcc.Dropdown(
-                    id='selection-target',
+                    id=f'selection-target',
                     style = {
                     # 'margin-top': '1.8%',
                     # 'margin-left': '2.5%',
@@ -136,17 +140,6 @@ def show_target_options_changed_callback(style):
         return opts
     opts = [{'label': opt, 'value': opt} for opt in last_column_values]
     return opts
-
-
-@app.callback(
-    Output("submit", "style"),
-    [Input("selection-target", "value")]
-)
-def select_all_none(value):
-    show = len(value) == 1
-    if show:
-        return dict()
-    return dict(display='none')
 
 
 @app.callback(
