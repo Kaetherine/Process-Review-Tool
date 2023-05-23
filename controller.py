@@ -5,7 +5,7 @@ def gen_sankey(df, source_columns=None, filter=None, linear=True, title='Sankey 
     print('gen_sankey')
 
     source_columns.append(source_columns[-1])
-    last_column_values = sorted(df[source_columns[-1]].unique())
+    last_column_values = sorted(df[source_columns[-1]].unique()) 
 
     if filter:
     #     for value in filter:

@@ -9,7 +9,7 @@ last_column_values = []
 filter_by = []
 linear_bool = True
 
-app = Dash(__name__)
+app = Dash(__name__) 
 
 app.layout = html.Div(className='app-body', children=[
         html.Img(
@@ -23,7 +23,7 @@ app.layout = html.Div(className='app-body', children=[
             ),
         dcc.Upload(
             id="upload-data",
-            children=html.Div(["Drag and Drop or ", html.A("Select Files")]),
+            children=html.Div(["Drag and Drop or Blablabla ", html.A("Select Files")]),
             style={
                 "width": "98%",
                 "height": "60px",
@@ -78,7 +78,7 @@ app.layout = html.Div(className='app-body', children=[
         ]),
         dcc.Graph(
         id="sankey",
-        style={"height": "1000px"}
+        style={"height": "10vh"}
         )
     ]
 )
@@ -191,4 +191,4 @@ def parse_data(contents, filename):
     return None
 
 if __name__ == '__main__':
-    app.run_server(debug=False)
+    app.run_server(debug=True)
