@@ -2,15 +2,12 @@ import pandas as pd
 
 def gen_sankey(df, source_columns=None, filter=None, linear=True, title='Sankey Diagram'):
     '''create the sankey diagram based on given params'''
-    # print('gen_sankey')
 
     source_columns.append(source_columns[-1])
     last_column_values = sorted(df[source_columns[-1]].unique()) 
 
     if filter:
-    #     for value in filter:
         df = df.loc[df[source_columns[-1]].isin(filter)]
-            # df = df[df[source_columns[-1]] == value]
  
     if linear:
         for col in list(df.columns):

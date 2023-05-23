@@ -53,7 +53,7 @@ app.layout = html.Div(className='app-body', children=[
                  ],
                 id='selection-source-container',
                 style=dict(display='none'),
-                className="nine columns pretty_container"
+                className="twelve columns pretty_container"
             ),
         ]),
         html.Div(className="row", children=[
@@ -74,7 +74,7 @@ app.layout = html.Div(className='app-body', children=[
                  ],
                 id='selection-target-container',
                 style=dict(display='none'),
-                className="three columns pretty_container"
+                className="two columns pretty_container"
             ),
         ]),
         dcc.Graph(
