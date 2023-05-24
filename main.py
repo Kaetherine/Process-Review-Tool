@@ -5,11 +5,10 @@ from controller import *
 
 df = pd.DataFrame()
 available_columns = []
+last_column_values = []
 filter_by = []
 linear_bool = True
 dropdowns = []
-filter_values = []
-zahl = 0
 
 app = Dash(__name__) 
 
@@ -59,17 +58,16 @@ app.layout = html.Div(
             html.Div(
                 [html.Label('Filter by'),
                 dcc.Dropdown(
-                    id=f'selection-target{zahl}',
-                    options = [{'label': opt, 'value': opt} for opt in df.iloc[:, zahl].unique()] if zahl < df.shape[1] else [],
-
+                    id=f'selection-target{value}',
+                    options=[{'label': opt, 'value': opt} for opt in last_column_values],
                     multi=True,
                     placeholder='Select the row values you want to include',
                     value=''
                 ),
                 ],
-                id=f'selection-target-container{zahl}',
+                id=f'selection-target-container{value}',
                 className="two columns pretty_container"
-            ) for zahl in range(7)
+            ) for value in range(7)
         ]),
         dcc.Graph(
         id="sankey",
@@ -110,7 +108,7 @@ def available_options_changed_callback(style):
 
 
 @app.callback(
-    Output(f"selection-target-containe{zahl}", "style"),
+    Output("selection-target-container0", "style"),
     [Input("selection-source", "value")]
 )
 def selected_columns_changed_callback(value):
@@ -121,29 +119,29 @@ def selected_columns_changed_callback(value):
 
 
 @app.callback(
-    Output(f"selection-target{zahl}", "options"),
-    [Input(f"selection-target-container{zahl}", "style")]
+    Output("selection-target0", "options"),
+    [Input("selection-target-container0", "style")]
 )
 def show_target_options_changed_callback(style):
     opts = []
     if 'display' in style.keys():
         return opts
-    opts = [{'label': opt, 'value': opt} for opt in filter_values]
+    opts = [{'label': opt, 'value': opt} for opt in last_column_values]
     return opts
 
 
 @app.callback(
     Output('sankey', 'figure'),
-    [Input("selection-source", "value"), Input(f"selection-target{zahl}", "value")]
+    [Input("selection-source", "value"), Input("selection-target0", "value")]
 )
 def update_graph(source=None, filter=None):
-    global df, filter_values
+    global df, last_column_values
     if not source:
         try:
             source = list(df.columns)
         except Exception as e:
             print(e)
-    fig, filter_values = gen_sankey(
+    fig, last_column_values = gen_sankey(
             df, source_columns=source, filter=filter, linear=linear_bool, title=df.name
             )
     return fig
