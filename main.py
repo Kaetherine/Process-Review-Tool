@@ -43,11 +43,6 @@ app.layout = html.Div(
                 [html.Label('Select columns'),
                  dcc.Dropdown(
                     id='selection-source',
-                    style = {
-                    # 'margin-top': '1.8%',
-                    # 'margin-left': '2.5%',
-                    # 'width': '95%',
-                    },
                     options=[{'label': opt, 'value': opt} for opt in available_columns],
                     multi=True,
                     placeholder='Select the columns you want to visualize',
@@ -55,31 +50,24 @@ app.layout = html.Div(
                 ),
                  ],
                 id='selection-source-container',
-                style=dict(display='none'),
+                # style=dict(display='none'),
                 className="twelve columns pretty_container"
             ),
         ]),
-        # html.Div(id='selection-target', children=dropdowns),
         html.Div(className="row", children=[
             html.Div(
                 [html.Label('Filter by'),
-                 dcc.Dropdown(
-                    id=f'selection-target',
-                    style = {
-                    # 'margin-top': '1.8%',
-                    # 'margin-left': '2.5%',
-                    # 'width': '95%',
-                    },
+                dcc.Dropdown(
+                    id=f'selection-target{value}',
                     options=[{'label': opt, 'value': opt} for opt in last_column_values],
                     multi=True,
                     placeholder='Select the row values you want to include',
                     value=''
                 ),
-                 ],
-                id='selection-target-container',
-                style=dict(display='none'),
+                ],
+                id=f'selection-target-container{value}',
                 className="two columns pretty_container"
-            ),
+            ) for value in range(7)
         ]),
         dcc.Graph(
         id="sankey",
@@ -103,7 +91,7 @@ def upload_callback(contents, filename):
         show = len(df) > 2
         if show:
             return dict()
-    return dict(display='none')
+    # return dict(display='none')
 
 
 @app.callback(
@@ -120,19 +108,19 @@ def available_options_changed_callback(style):
 
 
 @app.callback(
-    Output("selection-target-container", "style"),
+    Output("selection-target-container0", "style"),
     [Input("selection-source", "value")]
 )
 def selected_columns_changed_callback(value):
     show = len(value) > 1
     if show:
         return dict()
-    return dict(display='none')
+    # return dict(display='none')
 
 
 @app.callback(
-    Output("selection-target", "options"),
-    [Input("selection-target-container", "style")]
+    Output("selection-target0", "options"),
+    [Input("selection-target-container0", "style")]
 )
 def show_target_options_changed_callback(style):
     opts = []
@@ -144,7 +132,7 @@ def show_target_options_changed_callback(style):
 
 @app.callback(
     Output('sankey', 'figure'),
-    [Input("selection-source", "value"), Input("selection-target", "value")]
+    [Input("selection-source", "value"), Input("selection-target0", "value")]
 )
 def update_graph(source=None, filter=None):
     global df, last_column_values
