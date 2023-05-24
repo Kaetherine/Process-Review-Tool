@@ -69,4 +69,4 @@ def gen_sankey(df, source_columns=None, filter=None, linear=True, title='Sankey 
     # Create sankey diagram
     fig = dict(data=[data], layout=layout)
 
-    return fig, last_column_values
+    return fig, source_columns, last_column_values

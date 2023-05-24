@@ -9,7 +9,7 @@ last_column_values = []
 filter_by = []
 linear_bool = True
 dropdowns = []
-placeholder_col_name = 'Column'
+source_cols = []
 
 app = Dash(__name__) 
 
@@ -57,7 +57,7 @@ app.layout = html.Div(
         ]),
         html.Div(className="row", children=[
             html.Div(
-                [html.Label(f'Filter by {placeholder_col_name}'),
+                [html.Label(f'Filter by {source_cols[id_index] if len(source_cols) > id_index else ""}'),
                 dcc.Dropdown(
                     id=f'selection-target{id_index}',
                     options=[{'label': opt, 'value': opt} for opt in last_column_values],
@@ -108,21 +108,19 @@ def available_options_changed_callback(style):
     return opts
 
 
-@app.callback(
-    Output("selection-target-container0", "style"),
-    [Input("selection-source", "value")]
-)
 def selected_columns_changed_callback(value):
     show = len(value) > 1
     if show:
         return dict()
     # return dict(display='none')
 
+for i in range(7):
+    app.callback(
+        Output(f"selection-target-container{i}", "style"),
+        [Input("selection-source", "value")]
+)(selected_columns_changed_callback)
 
-@app.callback(
-    Output("selection-target0", "options"),
-    [Input("selection-target-container0", "style")]
-)
+
 def show_target_options_changed_callback(style):
     opts = []
     if 'display' in style.keys():
@@ -130,19 +128,25 @@ def show_target_options_changed_callback(style):
     opts = [{'label': opt, 'value': opt} for opt in last_column_values]
     return opts
 
+for i in range(7):
+    app.callback(
+        Output(f"selection-target{i}", "options"),
+        [Input(f"selection-target-container{i}", "style")]
+)(show_target_options_changed_callback)
+
 
 @app.callback(
     Output('sankey', 'figure'),
     [Input("selection-source", "value"), Input("selection-target0", "value")]
 )
 def update_graph(source=None, filter=None):
-    global df, last_column_values
+    global df, last_column_values, source_cols
     if not source:
         try:
             source = list(df.columns)
         except Exception as e:
             print(e)
-    fig, last_column_values = gen_sankey(
+    fig, source_columns, last_column_values = gen_sankey(
             df, source_columns=source, filter=filter, linear=linear_bool, title=df.name
             )
     return fig
