@@ -13,7 +13,7 @@ def gen_sankey(df, source_columns=None, filter=None, linear=True, title='Sankey 
         for col in list(df.columns):
             for index, value in enumerate(df[col]):
                 if str(col) not in str(value):
-                    df.at[index, col] = f'{col}:{value}'
+                    df.at[index, col] = f'{value} ({col})'
 
     df['count_col'] = [f'count_{x}' for x in range(len(df))]
 

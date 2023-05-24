@@ -9,6 +9,7 @@ last_column_values = []
 filter_by = []
 linear_bool = True
 dropdowns = []
+placeholder_col_name = 'Column'
 
 app = Dash(__name__) 
 
@@ -56,18 +57,18 @@ app.layout = html.Div(
         ]),
         html.Div(className="row", children=[
             html.Div(
-                [html.Label('Filter by'),
+                [html.Label(f'Filter by {placeholder_col_name}'),
                 dcc.Dropdown(
-                    id=f'selection-target{value}',
+                    id=f'selection-target{id_index}',
                     options=[{'label': opt, 'value': opt} for opt in last_column_values],
                     multi=True,
                     placeholder='Select the row values you want to include',
                     value=''
                 ),
                 ],
-                id=f'selection-target-container{value}',
+                id=f'selection-target-container{id_index}',
                 className="two columns pretty_container"
-            ) for value in range(7)
+            ) for id_index in range(7)
         ]),
         dcc.Graph(
         id="sankey",
