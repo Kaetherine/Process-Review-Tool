@@ -25,20 +25,20 @@ app.layout = html.Div(
                 }
             ),
         dcc.Upload(
-            id="upload-data",
-            children=html.Div(["Drag and Drop or ", html.A("Select Files")]),
+            id='upload-data',
+            children=html.Div(['Drag and Drop or ', html.A('Select Files')]),
             style={
-                "height": "60px",
-                "lineHeight": "60px",
-                "borderWidth": "1px",
-                "borderStyle": "dashed",
-                "borderRadius": "5px",
-                "textAlign": "center",
-                "margin-bottom": "9px",
+                'height': '60px',
+                'lineHeight': '60px',
+                'borderWidth': '1px',
+                'borderStyle': 'dashed',
+                'borderRadius': '5px',
+                'textAlign': 'center',
+                'margin-bottom': '9px',
             },
             multiple=True,
         ),
-        html.Div(className="row", children=[
+        html.Div(className='row', children=[
             html.Div(
                 [html.Label('Select columns'),
                  dcc.Dropdown(
@@ -49,14 +49,14 @@ app.layout = html.Div(
                 ),
                  ],
                 id='selection-source-container',
-                className="twelve columns pretty_container"
+                className='twelve columns pretty_container'
             ),
         ]),
-        html.Div(className="row", children=[
+        html.Div(className='row', children=[
             html.Div(
                 [html.Label(
                     f'''Filter by {
-                        source_cols[id_index] if len(source_cols) > id_index else ""
+                        source_cols[id_index] if len(source_cols) > id_index else ''
                         }'''
                     ),
                 dcc.Dropdown(
@@ -67,21 +67,21 @@ app.layout = html.Div(
                 ),
                 ],
                 id=f'selection-target-container{id_index}',
-                className="two columns pretty_container"
+                className='two columns pretty_container'
             ) for id_index in range(7)
         ]),
         dcc.Graph(
-        id="sankey",
-        style={"height": "65vh"}
+        id='sankey',
+        style={'height': '65vh'}
         )
     ]
 )
 
 
 @app.callback(
-    Output("selection-source-container", "style"),
-    [Input("upload-data", "contents"),
-     Input("upload-data", "filename")]
+    Output('selection-source-container', 'style'),
+    [Input('upload-data', 'contents'),
+     Input('upload-data', 'filename')]
 )
 def upload_callback(contents, filename):
     global df
@@ -95,8 +95,8 @@ def upload_callback(contents, filename):
 
 
 @app.callback(
-    Output("selection-source", "options"),
-    [Input("selection-source-container", "style")]
+    Output('selection-source', 'options'),
+    [Input('selection-source-container', 'style')]
 )
 def available_options_changed_callback(style):
     opts = []
@@ -114,9 +114,9 @@ def selected_columns_changed_callback(value):
 
 for i in range(7):
     app.callback(
-        Output(f"selection-target-container{i}", "style"),
-        [Input("selection-source", "value")]
-)(selected_columns_changed_callback)
+        Output(f'selection-target-container{i}', 'style'),
+        [Input('selection-source', 'value')]
+    )(selected_columns_changed_callback)
 
 
 def show_target_options_changed_callback(style):
@@ -126,14 +126,14 @@ def show_target_options_changed_callback(style):
 
 for i in range(7):
     app.callback(
-        Output(f"selection-target{i}", "options"),
-        [Input(f"selection-target-container{i}", "style")]
-)(show_target_options_changed_callback)
+        Output(f'selection-target{i}', 'options'),
+        [Input(f'selection-target-container{i}', 'style')]
+    )(show_target_options_changed_callback)
 
 
 @app.callback(
     Output('sankey', 'figure'),
-    [Input("selection-source", "value"), Input("selection-target0", "value")]
+    [Input('selection-source', 'value'), Input('selection-target0', 'value')]
 )
 def update_graph(source=None, filter=None):
     global df, last_column_values, source_cols
@@ -149,7 +149,7 @@ def update_graph(source=None, filter=None):
 
 
 def parse_data(contents, filename):
-    content_type, content_string = contents.split(",")
+    content_type, content_string = contents.split(',')
     decoded = base64.b64decode(content_string)
     try:
         if "xlsx" in filename:
@@ -158,7 +158,7 @@ def parse_data(contents, filename):
             return df
     except Exception as e:
         print(e)
-        return html.Div(["There was an error processing this file."])
+        return html.Div(['There was an error processing this file.'])
 
 if __name__ == '__main__':
     app.run_server(debug=True)
