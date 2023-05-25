@@ -4,7 +4,6 @@ def gen_sankey(df, selected_columns=None, filter=None, linear=True, title='Sanke
     '''create the sankey diagram based on given params'''
 
     selected_columns.append(selected_columns[-1])
-    print(filter)
     if filter != None:
         filter_dict = {}
         for i in range(len(selected_columns)-1):
