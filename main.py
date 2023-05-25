@@ -79,7 +79,6 @@ app.layout = html.Div(
     ]
 )
 
-
 @app.callback(
     Output('selection-source-container', 'style'),
     [Input('upload-data', 'contents'),
@@ -122,8 +121,12 @@ for i in range(7):
 
 
 def show_target_options_changed_callback(index, style):
-    opts = [{'label': opt, 'value': opt} for opt in df[selected_columns[index]].unique()]
+    if index >= len(selected_columns):
+        return []
+    column_values = df[selected_columns[index]].unique()
+    opts = [{'label': opt, 'value': opt} for opt in column_values if len(column_values) > 1]
     return opts
+
 
 for i in range(7):
     app.callback(
