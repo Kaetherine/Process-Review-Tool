@@ -121,7 +121,7 @@ def show_target_options_changed_callback(index, style):
     if index >= len(selected_columns):
         return []
     column_values = df[selected_columns[:-1][index]].unique()
-    opts = [{'label': opt, 'value': opt} for opt in column_values[:-1]]
+    opts = [{'label': opt, 'value': opt} for opt in column_values]
     return opts
 
 
@@ -146,11 +146,10 @@ def update_graph(source=None, filter=None):
     fig, selected_columns = gen_sankey(
             df, selected_columns=source, filter=filter, linear=linear_bool, title=df.name
             )
-    print(filter)
     return fig
 
 def parse_data(contents, filename):
-    content_type, content_string = contents.split(',')
+    content_string = contents.split(',')[1]
     decoded = base64.b64decode(content_string)
     try:
         if "xlsx" in filename:
