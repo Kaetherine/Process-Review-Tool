@@ -43,7 +43,6 @@ app.layout = html.Div(
                 [html.Label('Select columns'),
                  dcc.Dropdown(
                     id='selection-source',
-                    # options=[{'label': opt, 'value': opt} for opt in available_columns],
                     multi=True,
                     placeholder='Select the columns you want to visualize',
                     value=[]
@@ -62,7 +61,6 @@ app.layout = html.Div(
                     ),
                 dcc.Dropdown(
                     id=f'selection-target{id_index}',
-                    # options=[{'label': opt, 'value': opt} for opt in ['hi', 'moin', 'tschüss']],
                     multi=True,
                     placeholder='Select the row values you want to include',
                     value=[]
@@ -91,8 +89,8 @@ def upload_callback(contents, filename):
         contents = contents[0]
         filename = filename[0]
         df = parse_data(contents, filename)
-        show = len(df) > 2
-        if show:
+        min_required_columns = len(df) > 2
+        if min_required_columns:
             return dict()
 
 
@@ -108,8 +106,10 @@ def available_options_changed_callback(style):
 
 
 def selected_columns_changed_callback(value):
-    show = len(value) > 1
-    if show:
+    '''create diagram only if at leas two columns are selected'''
+    selected_columns = value
+    min_required_columns = len(selected_columns) > 1
+    if min_required_columns:
         return dict()
 
 for i in range(7):
