@@ -1,6 +1,6 @@
 import base64
 import io
-from dash import dcc, html, Input, Output, Dash, dash_table
+from dash import dcc, html, Input, Output, State, Dash, dash_table
 from controller import *
 
 df = pd.DataFrame()
@@ -123,7 +123,7 @@ for i in range(7):
 
 def show_target_options_changed_callback(style):
     opts = []
-    opts = [{'label': opt, 'value': opt} for opt in last_column_values]
+    opts = [{'label': opt, 'value': opt} for opt in df[selected_columns[0]]]
     return opts
 
 for i in range(7):
