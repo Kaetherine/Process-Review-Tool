@@ -121,7 +121,6 @@ for i in range(7):
 def show_target_options_changed_callback(index, style):
     if index >= len(selected_columns):
         return []
-    print(selected_columns[:-1])
     column_values = df[selected_columns[:-1][index]].unique()
     opts = [{'label': opt, 'value': opt} for opt in column_values[:-1]]
     return opts
