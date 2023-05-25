@@ -6,7 +6,6 @@ from functools import partial
 
 df = pd.DataFrame()
 available_columns = []
-last_column_values = []
 linear_bool = True
 selected_columns = []
 
@@ -138,13 +137,13 @@ for i in range(7):
     [Input('selection-source', 'value'), Input('selection-target0', 'value')]
 )
 def update_graph(source=None, filter=None):
-    global df, last_column_values, selected_columns
+    global df, selected_columns
     if not source:
         try:
             source = list(df.columns)
         except Exception as e:
             print(e)
-    fig, selected_columns, last_column_values = gen_sankey(
+    fig, selected_columns = gen_sankey(
             df, selected_columns=source, filter=filter, linear=linear_bool, title=df.name
             )
     print(filter)
