@@ -2,6 +2,7 @@ import base64
 import io
 from dash import dcc, html, Input, Output, State, Dash, dash_table
 from controller import *
+from functools import partial
 
 df = pd.DataFrame()
 available_columns = []
@@ -120,15 +121,16 @@ for i in range(7):
     )(selected_columns_changed_callback)
 
 
-def show_target_options_changed_callback(style):
-    opts = [{'label': opt, 'value': opt} for opt in last_column_values]
+def show_target_options_changed_callback(index, style):
+    opts = [{'label': opt, 'value': opt} for opt in df[selected_columns[index]].unique()]
     return opts
 
 for i in range(7):
     app.callback(
         Output(f'selection-target{i}', 'options'),
         [Input(f'selection-target-container{i}', 'style')]
-    )(show_target_options_changed_callback)
+    )(partial(show_target_options_changed_callback, i))
+
 
 
 @app.callback(
@@ -146,7 +148,6 @@ def update_graph(source=None, filter=None):
             df, source_columns=source, filter=filter, linear=linear_bool, title=df.name
             )
     return fig
-
 
 def parse_data(contents, filename):
     content_type, content_string = contents.split(',')
