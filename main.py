@@ -8,8 +8,6 @@ df = pd.DataFrame()
 available_columns = []
 last_column_values = []
 linear_bool = True
-dropdowns = []
-source_columns = []
 selected_columns = []
 
 app = Dash(__name__) 
@@ -58,7 +56,7 @@ app.layout = html.Div(
             html.Div(
                 [html.Label(
                     f'''Filter by {
-                        source_columns[count] if len(source_columns) > count else ''
+                        selected_columns[count] if len(selected_columns) > count else ''
                         }'''
                     ),
                 dcc.Dropdown(
@@ -123,8 +121,9 @@ for i in range(7):
 def show_target_options_changed_callback(index, style):
     if index >= len(selected_columns):
         return []
-    column_values = df[selected_columns[index]].unique()
-    opts = [{'label': opt, 'value': opt} for opt in column_values if len(column_values) > 1]
+    print(selected_columns[:-1])
+    column_values = df[selected_columns[:-1][index]].unique()
+    opts = [{'label': opt, 'value': opt} for opt in column_values[:-1]]
     return opts
 
 
@@ -135,21 +134,21 @@ for i in range(7):
     )(partial(show_target_options_changed_callback, i))
 
 
-
 @app.callback(
     Output('sankey', 'figure'),
     [Input('selection-source', 'value'), Input('selection-target0', 'value')]
 )
 def update_graph(source=None, filter=None):
-    global df, last_column_values, source_columns
+    global df, last_column_values, selected_columns
     if not source:
         try:
             source = list(df.columns)
         except Exception as e:
             print(e)
-    fig, source_columns, last_column_values = gen_sankey(
-            df, source_columns=source, filter=filter, linear=linear_bool, title=df.name
+    fig, selected_columns, last_column_values = gen_sankey(
+            df, selected_columns=source, filter=filter, linear=linear_bool, title=df.name
             )
+    print(filter)
     return fig
 
 def parse_data(contents, filename):

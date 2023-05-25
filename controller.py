@@ -1,13 +1,13 @@
 import pandas as pd
 
-def gen_sankey(df, source_columns=None, filter=None, linear=True, title='Sankey Diagram'):
+def gen_sankey(df, selected_columns=None, filter=None, linear=True, title='Sankey Diagram'):
     '''create the sankey diagram based on given params'''
 
-    source_columns.append(source_columns[-1])
-    last_column_values = sorted(df[source_columns[-1]].unique()) 
+    selected_columns.append(selected_columns[-1])
+    last_column_values = sorted(df[selected_columns[-1]].unique()) 
 
     if filter:
-        df = df.loc[df[source_columns[-1]].isin(filter)]
+        df = df.loc[df[selected_columns[-1]].isin(filter)]
  
     if linear:
         for col in list(df.columns):
@@ -19,13 +19,13 @@ def gen_sankey(df, source_columns=None, filter=None, linear=True, title='Sankey 
 
     # Create a list of dataframes with source and target columns
     dfs = []
-    for column in source_columns:
-        i = source_columns.index(column)+1
-        if column == source_columns[-1] or column == source_columns[-2] or column == 'count_col':
+    for column in selected_columns:
+        i = selected_columns.index(column)+1
+        if column == selected_columns[-1] or column == selected_columns[-2] or column == 'count_col':
             continue
         else:
             try:
-                dfx = df.groupby([column, source_columns[i]])['count_col'].count().reset_index()
+                dfx = df.groupby([column, selected_columns[i]])['count_col'].count().reset_index()
                 dfx.columns = ['source', 'target', 'count']
                 dfs.append(dfx)
             except Exception as e:
@@ -69,4 +69,4 @@ def gen_sankey(df, source_columns=None, filter=None, linear=True, title='Sankey 
     # Create sankey diagram
     fig = dict(data=[data], layout=layout)
 
-    return fig, source_columns, last_column_values
+    return fig, selected_columns, last_column_values
