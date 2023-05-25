@@ -57,19 +57,19 @@ app.layout = html.Div(
             html.Div(
                 [html.Label(
                     f'''Filter by {
-                        source_columns[id_index] if len(source_columns) > id_index else ''
+                        source_columns[count] if len(source_columns) > count else ''
                         }'''
                     ),
                 dcc.Dropdown(
-                    id=f'selection-target{id_index}',
+                    id=f'selection-target{count}',
                     multi=True,
                     placeholder='Select the row values you want to include',
                     value=[]
                 ),
                 ],
-                id=f'selection-target-container{id_index}',
+                id=f'selection-target-container{count}',
                 className='two columns pretty_container'
-            ) for id_index in range(7)
+            ) for count in range(7)
         ]),
         dcc.Graph(
         id='sankey',
