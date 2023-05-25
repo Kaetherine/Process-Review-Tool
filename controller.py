@@ -4,10 +4,11 @@ def gen_sankey(df, selected_columns=None, filter=None, linear=True, title='Sanke
     '''create the sankey diagram based on given params'''
 
     selected_columns.append(selected_columns[-1])
-    last_column_values = sorted(df[selected_columns[-1]].unique()) 
-
-    if filter:
-        df = df.loc[df[selected_columns[-1]].isin(filter)]
+    print(filter)
+    if filter != None:
+        filter_dict = {}
+        for i in range(len(selected_columns)-1):
+            filter_dict[selected_columns[i]] = filter[i]
  
     if linear:
         for col in list(df.columns):
@@ -69,4 +70,4 @@ def gen_sankey(df, selected_columns=None, filter=None, linear=True, title='Sanke
     # Create sankey diagram
     fig = dict(data=[data], layout=layout)
 
-    return fig, selected_columns
+    return fig

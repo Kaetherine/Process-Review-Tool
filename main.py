@@ -8,6 +8,8 @@ df = pd.DataFrame()
 available_columns = []
 linear_bool = True
 selected_columns = []
+data = {}
+filter_values = []
 
 app = Dash(__name__) 
 
@@ -91,7 +93,6 @@ def upload_callback(contents, filename):
         if min_required_columns:
             return dict()
 
-
 @app.callback(
     Output('selection-source', 'options'),
     [Input('selection-source-container', 'style')]
@@ -100,7 +101,6 @@ def available_options_changed_callback(style):
     available_columns = list(df.columns)
     opts = [{'label': opt, 'value': opt} for opt in available_columns]
     return opts
-
 
 def selected_columns_changed_callback(value):
     '''create diagram only if at leas two columns are selected'''
@@ -116,14 +116,13 @@ for i in range(7):
         [Input('selection-source', 'value')]
     )(selected_columns_changed_callback)
 
-
 def show_target_options_changed_callback(index, style):
     if index >= len(selected_columns):
         return []
-    column_values = df[selected_columns[:-1][index]].unique()
+    column_values = df[selected_columns[index]].unique()
     opts = [{'label': opt, 'value': opt} for opt in column_values]
+    # data[selected_columns[index]] = column_values
     return opts
-
 
 for i in range(7):
     app.callback(
@@ -131,20 +130,22 @@ for i in range(7):
         [Input(f'selection-target-container{i}', 'style')]
     )(partial(show_target_options_changed_callback, i))
 
-
 @app.callback(
     Output('sankey', 'figure'),
-    [Input('selection-source', 'value'), Input('selection-target0', 'value')]
+    [Input('selection-source', 'value')] + 
+    [Input(f'selection-target{i}', 'value') for i in range(7)]
 )
-def update_graph(source=None, filter=None):
+def update_graph(source=None, *filters):
     global df, selected_columns
+    if filters == ([], [], [], [], [], [], []):
+        filters = None
     if not source:
         try:
             source = list(df.columns)
         except Exception as e:
             print(e)
-    fig, selected_columns = gen_sankey(
-            df, selected_columns=source, filter=filter, linear=linear_bool, title=df.name
+    fig = gen_sankey(
+            df, selected_columns=source, filter=filters, linear=linear_bool, title=df.name
             )
     return fig
 
