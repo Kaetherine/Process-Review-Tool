@@ -100,7 +100,6 @@ def upload_callback(contents, filename):
     [Input('selection-source-container', 'style')]
 )
 def available_options_changed_callback(style):
-    opts = []
     available_columns = list(df.columns)
     opts = [{'label': opt, 'value': opt} for opt in available_columns]
     return opts
@@ -122,8 +121,7 @@ for i in range(7):
 
 
 def show_target_options_changed_callback(style):
-    opts = []
-    opts = [{'label': opt, 'value': opt} for opt in df[selected_columns[0]]]
+    opts = [{'label': opt, 'value': opt} for opt in last_column_values]
     return opts
 
 for i in range(7):
