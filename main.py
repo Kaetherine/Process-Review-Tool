@@ -8,7 +8,8 @@ available_columns = []
 last_column_values = []
 linear_bool = True
 dropdowns = []
-source_cols = []
+source_columns = []
+selected_columns = []
 
 app = Dash(__name__) 
 
@@ -56,7 +57,7 @@ app.layout = html.Div(
             html.Div(
                 [html.Label(
                     f'''Filter by {
-                        source_cols[id_index] if len(source_cols) > id_index else ''
+                        source_columns[id_index] if len(source_columns) > id_index else ''
                         }'''
                     ),
                 dcc.Dropdown(
@@ -107,6 +108,7 @@ def available_options_changed_callback(style):
 
 def selected_columns_changed_callback(value):
     '''create diagram only if at leas two columns are selected'''
+    global selected_columns
     selected_columns = value
     min_required_columns = len(selected_columns) > 1
     if min_required_columns:
@@ -136,7 +138,7 @@ for i in range(7):
     [Input('selection-source', 'value'), Input('selection-target0', 'value')]
 )
 def update_graph(source=None, filter=None):
-    global df, last_column_values, source_cols
+    global df, last_column_values, source_columns
     if not source:
         try:
             source = list(df.columns)
