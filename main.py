@@ -35,7 +35,7 @@ app.layout = html.Div(
                 "borderStyle": "dashed",
                 "borderRadius": "5px",
                 "textAlign": "center",
-                "margin-bottom": "20px",
+                "margin-bottom": "9px",
             },
             multiple=True,
         ),
