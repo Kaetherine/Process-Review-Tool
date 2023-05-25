@@ -43,26 +43,29 @@ app.layout = html.Div(
                 [html.Label('Select columns'),
                  dcc.Dropdown(
                     id='selection-source',
-                    options=[{'label': opt, 'value': opt} for opt in available_columns],
+                    # options=[{'label': opt, 'value': opt} for opt in available_columns],
                     multi=True,
                     placeholder='Select the columns you want to visualize',
                     value=[]
                 ),
                  ],
                 id='selection-source-container',
-                # style=dict(display='none'),
                 className="twelve columns pretty_container"
             ),
         ]),
         html.Div(className="row", children=[
             html.Div(
-                [html.Label(f'Filter by {source_cols[id_index] if len(source_cols) > id_index else ""}'),
+                [html.Label(
+                    f'''Filter by {
+                        source_cols[id_index] if len(source_cols) > id_index else ""
+                        }'''
+                    ),
                 dcc.Dropdown(
                     id=f'selection-target{id_index}',
-                    options=[{'label': opt, 'value': opt} for opt in last_column_values],
+                    # options=[{'label': opt, 'value': opt} for opt in ['hi', 'moin', 'tschüss']],
                     multi=True,
                     placeholder='Select the row values you want to include',
-                    value=''
+                    value=[]
                 ),
                 ],
                 id=f'selection-target-container{id_index}',
@@ -91,7 +94,6 @@ def upload_callback(contents, filename):
         show = len(df) > 2
         if show:
             return dict()
-    # return dict(display='none')
 
 
 @app.callback(
@@ -109,7 +111,6 @@ def selected_columns_changed_callback(value):
     show = len(value) > 1
     if show:
         return dict()
-    # return dict(display='none')
 
 for i in range(7):
     app.callback(
