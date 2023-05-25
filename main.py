@@ -6,7 +6,6 @@ from controller import *
 df = pd.DataFrame()
 available_columns = []
 last_column_values = []
-filter_by = []
 linear_bool = True
 dropdowns = []
 source_cols = []
@@ -101,8 +100,6 @@ def upload_callback(contents, filename):
 )
 def available_options_changed_callback(style):
     opts = []
-    # if 'display' in style.keys():
-    #     return opts
     available_columns = list(df.columns)
     opts = [{'label': opt, 'value': opt} for opt in available_columns]
     return opts
@@ -123,8 +120,6 @@ for i in range(7):
 
 def show_target_options_changed_callback(style):
     opts = []
-    # if 'display' in style.keys():
-    #     return opts
     opts = [{'label': opt, 'value': opt} for opt in last_column_values]
     return opts
 

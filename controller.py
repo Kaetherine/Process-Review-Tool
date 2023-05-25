@@ -8,6 +8,7 @@ def gen_sankey(df, source_columns=None, filter=None, linear=True, title='Sankey 
 
     if filter:
         df = df.loc[df[source_columns[-1]].isin(filter)]
+        print(df)
  
     if linear:
         for col in list(df.columns):
