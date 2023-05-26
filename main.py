@@ -1,6 +1,6 @@
 import base64
 import io
-from dash import dcc, html, Input, Output, State, Dash, dash_table
+from dash import dcc, html, Input, Output, Dash
 from controller import *
 from functools import partial
 
