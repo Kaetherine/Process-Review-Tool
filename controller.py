@@ -4,11 +4,11 @@ def gen_sankey(df, selected_columns=None, filter=None, linear=True, title='Sanke
     '''create the sankey diagram based on given params'''
 
     selected_columns.append(selected_columns[-1])
+
     if filter != None:
-        new_df = pd.DataFrame()
         for i in range(len(selected_columns)-1):
-            new_df[selected_columns[i]] = filter[i]
-        print(new_df)
+            new_df = df.loc[df[selected_columns[i]].isin(filter[i])]
+        df = new_df
  
     if linear:
         for col in list(df.columns):
