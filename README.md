@@ -32,9 +32,9 @@ The Sankey diagram will be generated and displayed on the screen, showing the fl
 
 # Files
 main.py: This is the main file containing the Dash application, layout definition, and callback functions.
-controller.py: This file contains the gen_sankey() function responsible for generating the Sankey diagram using Plotly.
+create_sankey_diagram.py: This file contains the gen_sankey() function responsible for generating the Sankey diagram using Plotly.
 Customization
-You can customize the appearance of the Sankey diagram and the app layout by modifying the gen_sankey() function in controller.py and the app.layout in main.py respectively. Please refer to the Dash documentation and Plotly documentation for more information on customization options.
+You can customize the appearance of the Sankey diagram and the app layout by modifying the gen_sankey() function in create_sankey_diagram.py and the app.layout in main.py respectively. Please refer to the Dash documentation and Plotly documentation for more information on customization options.
 
 # License
 This project is licensed under the MIT License. See the LICENSE file for more details.

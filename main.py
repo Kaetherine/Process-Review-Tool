@@ -1,7 +1,7 @@
 import base64
 import io
 from dash import dcc, html, Input, Output, Dash
-from controller import *
+from create_sankey_diagram import *
 from functools import partial
 
 df = pd.DataFrame()
@@ -143,8 +143,12 @@ def update_graph(source=None, *filters):
             source = list(df.columns)
         except Exception as e:
             print(e)
+    try:
+        title = df.name
+    except:
+        title = 'Sankey Diagram'
     fig = gen_sankey(
-            df, selected_columns=source, filter=filters, linear=linear_bool, title=df.name
+            df, selected_columns=source, filter=filters, linear=linear_bool, title=title
             )
     return fig
 
@@ -154,7 +158,10 @@ def parse_data(contents, filename):
     try:
         if "xlsx" in filename:
             df = pd.read_excel(io.BytesIO(decoded))
-            df.name = filename
+            try:
+                df.name = filename
+            except:
+                pass
             return df
     except Exception as e:
         print(e)
