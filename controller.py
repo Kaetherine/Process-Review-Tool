@@ -5,9 +5,10 @@ def gen_sankey(df, selected_columns=None, filter=None, linear=True, title='Sanke
 
     selected_columns.append(selected_columns[-1])
     if filter != None:
-        filter_dict = {}
+        new_df = pd.DataFrame()
         for i in range(len(selected_columns)-1):
-            filter_dict[selected_columns[i]] = filter[i]
+            new_df[selected_columns[i]] = filter[i]
+        print(new_df)
  
     if linear:
         for col in list(df.columns):
