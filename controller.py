@@ -6,9 +6,10 @@ def gen_sankey(df, selected_columns=None, filter=None, linear=True, title='Sanke
     selected_columns.append(selected_columns[-1])
 
     if filter != None:
-        for i in range(len(selected_columns)-1):
-            new_df = df.loc[df[selected_columns[i]].isin(filter[i])]
-        df = new_df
+        for i in range(len(filter)-1):
+            if filter[i] == []:
+                continue
+            df = df.loc[df[selected_columns[i]].isin(filter[i])]
  
     if linear:
         for col in list(df.columns):
