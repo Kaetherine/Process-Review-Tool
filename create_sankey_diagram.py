@@ -2,7 +2,8 @@ import pandas as pd
 
 def gen_sankey(df, selected_columns=None, filter=None, linear=True, title='Sankey Diagram'):
     '''create the sankey diagram based on given params'''
-    if selected_columns != None:
+  
+    if selected_columns != []:
         selected_columns.append(selected_columns[-1])
 
     if filter != None:
