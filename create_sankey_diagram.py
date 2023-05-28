@@ -35,45 +35,42 @@ def gen_sankey(df, selected_columns=None, filter=None, linear=True, title='Sanke
                 print(f'columnname: {column}\n{repr(e)}')
 
     # Concatenate dataframes
-    if not df.empty:
-        links = pd.concat(dfs, axis=0)
-        unique_source_target = list(pd.unique(links[['source', 'target']].values.ravel('K')))
-        mapping_dict = {k: v for v, k in enumerate(unique_source_target)}
-        links['source'] = links['source'].map(mapping_dict)
-        links['target'] = links['target'].map(mapping_dict)
-        links_dict = links.to_dict(orient='list')
+    # if not df.empty:
+    links = pd.concat(dfs, axis=0)
+    unique_source_target = list(pd.unique(links[['source', 'target']].values.ravel('K')))
+    mapping_dict = {k: v for v, k in enumerate(unique_source_target)}
+    links['source'] = links['source'].map(mapping_dict)
+    links['target'] = links['target'].map(mapping_dict)
+    links_dict = links.to_dict(orient='list')
 
-        # Define sankey diagram nodes and links
-        data = dict(
-            type='sankey',
-            node=dict(
-                pad=15,
-                thickness=20,
-                line=dict(
-                    color='#2C66F6',
-                    width=0.1
-                ),
-                label=unique_source_target,
-                color='#2C66F6'
+    # Define sankey diagram nodes and links
+    data = dict(
+        type='sankey',
+        node=dict(
+            pad=15,
+            thickness=20,
+            line=dict(
+                color='#2C66F6',
+                width=0.1
             ),
-            link=dict(
-                source=links_dict['source'],
-                target=links_dict['target'],
-                value=links_dict['count']
-            )
+            label=unique_source_target,
+            color='#2C66F6'
+        ),
+        link=dict(
+            source=links_dict['source'],
+            target=links_dict['target'],
+            value=links_dict['count']
         )
+    )
 
-        # Define layout
-        layout = dict(
-        title=title,
-        font=dict(
-            size=16
-        )
-        )
-        # Create sankey diagram
-        fig = dict(data=[data], layout=layout)
+    # Define layout
+    layout = dict(
+    title=title,
+    font=dict(
+        size=16
+    )
+    )
+    # Create sankey diagram
+    fig = dict(data=[data], layout=layout)
 
-    else:
-        fig = None
-        
     return fig
