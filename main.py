@@ -147,6 +147,7 @@ def update_graph(source=None, *filters):
     title = 'Sankey Diagram'
     if not df.empty:
         title = df.name
+
     fig = gen_sankey(
             df, selected_columns=source, filter=filters, linear=linear_bool, title=title
             )
@@ -158,7 +159,10 @@ def parse_data(contents, filename):
     try:
         if "xlsx" in filename:
             df = pd.read_excel(io.BytesIO(decoded))
-            df.name = filename
+            try:
+                df.name = filename
+            except:
+                pass
             return df
     except Exception as e:
         print(e)
