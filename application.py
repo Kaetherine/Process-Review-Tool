@@ -1,11 +1,8 @@
 import base64
 import io
-import dash
+from dash import dcc, html, Input, Output, Dash
 from create_sankey_diagram import *
 from functools import partial
-import pandas as pd
-
-
 
 df = pd.DataFrame()
 available_columns = []
@@ -14,12 +11,12 @@ selected_columns = []
 data = {}
 filter_values = []
 
-app = dash.Dash(__name__) 
+app= Dash(__name__) 
 
-app.layout = dash.html.Div(
+app.layout = html.Div(
     
     className='app-body', children=[
-        dash.html.Img(
+        html.Img(
         src='assets\logo.png',
         alt='PwC Logo',
         style={'width':'160px',
@@ -28,9 +25,9 @@ app.layout = dash.html.Div(
                 'right': '4.2%',
                 }
             ),
-        dash.dcc.Upload(
+        dcc.Upload(
             id='upload-data',
-            children=dash.html.Div(['Drag and Drop or ', dash.html.A('Select Files')]),
+            children=html.Div(['Drag and Drop or ', html.A('Select Files')]),
             style={
                 'height': '60px',
                 'lineHeight': '60px',
@@ -42,10 +39,10 @@ app.layout = dash.html.Div(
             },
             multiple=True,
         ),
-        dash.html.Div(className='row', children=[
-            dash.html.Div(
-                [dash.html.Label('Select columns'),
-                 dash.dcc.Dropdown(
+        html.Div(className='row', children=[
+            html.Div(
+                [html.Label('Select columns'),
+                 dcc.Dropdown(
                     id='selection-source',
                     multi=True,
                     placeholder='Select the columns you want to visualize',
@@ -56,14 +53,14 @@ app.layout = dash.html.Div(
                 className='twelve columns pretty_container'
             ),
         ]),
-        dash.html.Div(className='row', children=[
-            dash.html.Div(
-                [dash.html.Label(
+        html.Div(className='row', children=[
+            html.Div(
+                [html.Label(
                     f'''Filter by {
                         selected_columns[count] if len(selected_columns) > count else ''
                         }'''
                     ),
-                dash.dcc.Dropdown(
+                dcc.Dropdown(
                     id=f'selection-target{count}',
                     multi=True,
                     placeholder='Select the row values you want to include',
@@ -74,7 +71,7 @@ app.layout = dash.html.Div(
                 className='two columns pretty_container'
             ) for count in range(7)
         ]),
-        dash.dcc.Graph(
+        dcc.Graph(
         id='sankey',
         style={'height': '65vh'}
         )
@@ -82,9 +79,9 @@ app.layout = dash.html.Div(
 )
 
 @app.callback(
-    dash.Output('selection-source-container', 'style'),
-    [dash.Input('upload-data', 'contents'),
-     dash.Input('upload-data', 'filename')]
+    Output('selection-source-container', 'style'),
+    [Input('upload-data', 'contents'),
+     Input('upload-data', 'filename')]
 )
 def upload_callback(contents, filename):
     global df
@@ -97,8 +94,8 @@ def upload_callback(contents, filename):
             return dict()
 
 @app.callback(
-    dash.Output('selection-source', 'options'),
-    [dash.Input('selection-source-container', 'style')]
+    Output('selection-source', 'options'),
+    [Input('selection-source-container', 'style')]
 )
 def available_options_changed_callback(style):
     available_columns = list(df.columns)
@@ -115,8 +112,8 @@ def selected_columns_changed_callback(value):
 
 for i in range(7):
     app.callback(
-        dash.Output(f'selection-target-container{i}', 'style'),
-        [dash.Input('selection-source', 'value')]
+        Output(f'selection-target-container{i}', 'style'),
+        [Input('selection-source', 'value')]
     )(selected_columns_changed_callback)
 
 def show_target_options_changed_callback(index, style):
@@ -128,14 +125,14 @@ def show_target_options_changed_callback(index, style):
 
 for i in range(7):
     app.callback(
-        dash.Output(f'selection-target{i}', 'options'),
-        [dash.Input(f'selection-target-container{i}', 'style')]
+        Output(f'selection-target{i}', 'options'),
+        [Input(f'selection-target-container{i}', 'style')]
     )(partial(show_target_options_changed_callback, i))
 
 @app.callback(
-    dash.Output('sankey', 'figure'),
-    [dash.Input('selection-source', 'value')] + 
-    [dash.Input(f'selection-target{i}', 'value') for i in range(7)]
+    Output('sankey', 'figure'),
+    [Input('selection-source', 'value')] + 
+    [Input(f'selection-target{i}', 'value') for i in range(7)]
 )
 def update_graph(source=None, *filters):
     global df, selected_columns
@@ -165,9 +162,10 @@ def parse_data(contents, filename):
             return df
     except Exception as e:
         print(e)
-        return dash.html.Div(['There was an error processing this file.'])
+        return html.Div(['There was an error processing this file.'])
+
 
 application = app.server
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8080)
+    application.run(debug=True, port=8080)
