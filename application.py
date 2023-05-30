@@ -41,45 +41,45 @@ app.layout = dash.html.Div(
                 'margin-bottom': '9px',
             },
             multiple=True,
-        )])
-#         dash.html.Div(className='row', children=[
-#             dash.html.Div(
-#                 [dash.html.Label('Select columns'),
-#                  dash.dcc.Dropdown(
-#                     id='selection-source',
-#                     multi=True,
-#                     placeholder='Select the columns you want to visualize',
-#                     value=[]
-#                 ),
-#                  ],
-#                 id='selection-source-container',
-#                 className='twelve columns pretty_container'
-#             ),
-#         ]),
-#         dash.html.Div(className='row', children=[
-#             dash.html.Div(
-#                 [dash.html.Label(
-#                     f'''Filter by {
-#                         selected_columns[count] if len(selected_columns) > count else ''
-#                         }'''
-#                     ),
-#                 dash.dcc.Dropdown(
-#                     id=f'selection-target{count}',
-#                     multi=True,
-#                     placeholder='Select the row values you want to include',
-#                     value=[]
-#                 ),
-#                 ],
-#                 id=f'selection-target-container{count}',
-#                 className='two columns pretty_container'
-#             ) for count in range(7)
-#         ]),
-#         dash.dcc.Graph(
-#         id='sankey',
-#         style={'height': '65vh'}
-#         )
-#     ]
-# )
+        ),
+        dash.html.Div(className='row', children=[
+            dash.html.Div(
+                [dash.html.Label('Select columns'),
+                 dash.dcc.Dropdown(
+                    id='selection-source',
+                    multi=True,
+                    placeholder='Select the columns you want to visualize',
+                    value=[]
+                ),
+                 ],
+                id='selection-source-container',
+                className='twelve columns pretty_container'
+            ),
+        ]),
+        dash.html.Div(className='row', children=[
+            dash.html.Div(
+                [dash.html.Label(
+                    f'''Filter by {
+                        selected_columns[count] if len(selected_columns) > count else ''
+                        }'''
+                    ),
+                dash.dcc.Dropdown(
+                    id=f'selection-target{count}',
+                    multi=True,
+                    placeholder='Select the row values you want to include',
+                    value=[]
+                ),
+                ],
+                id=f'selection-target-container{count}',
+                className='two columns pretty_container'
+            ) for count in range(7)
+        ]),
+        dash.dcc.Graph(
+        id='sankey',
+        style={'height': '65vh'}
+        )
+    ]
+)
 
 # @application.callback(
 #     Output('selection-source-container', 'style'),
