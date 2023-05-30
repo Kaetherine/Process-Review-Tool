@@ -1,7 +1,7 @@
 import base64
 import io
 import dash
-# from create_sankey_diagram import *
+from create_sankey_diagram import *
 from functools import partial
 import pandas as pd
 
