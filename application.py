@@ -132,40 +132,40 @@ for i in range(7):
         [dash.Input(f'selection-target-container{i}', 'style')]
     )(partial(show_target_options_changed_callback, i))
 
-# @application.callback(
-#     dash.Output('sankey', 'figure'),
-#     [dash.nput('selection-source', 'value')] + 
-#     [dash.Input(f'selection-target{i}', 'value') for i in range(7)]
-# )
-# def update_graph(source=None, *filters):
-#     global df, selected_columns
-#     if filters == ([], [], [], [], [], [], []):
-#         filters = None
-#     if not source:
-#         try:
-#             source = list(df.columns)
-#         except Exception as e:
-#             print(e)
+@app.callback(
+    dash.Output('sankey', 'figure'),
+    [dash.Input('selection-source', 'value')] + 
+    [dash.Input(f'selection-target{i}', 'value') for i in range(7)]
+)
+def update_graph(source=None, *filters):
+    global df, selected_columns
+    if filters == ([], [], [], [], [], [], []):
+        filters = None
+    if not source:
+        try:
+            source = list(df.columns)
+        except Exception as e:
+            print(e)
 
-#     title = 'Sankey Diagram'
-#     if not df.empty:
-#         title = df.name
-#     fig = gen_sankey(
-#             df, selected_columns=source, filter=filters, linear=linear_bool, title=title
-#             )
-#     return fig
+    title = 'Sankey Diagram'
+    if not df.empty:
+        title = df.name
+    fig = gen_sankey(
+            df, selected_columns=source, filter=filters, linear=linear_bool, title=title
+            )
+    return fig
 
-# def parse_data(contents, filename):
-#     content_string = contents.split(',')[1]
-#     decoded = base64.b64decode(content_string)
-#     try:
-#         if "xlsx" in filename:
-#             df = pd.read_excel(io.BytesIO(decoded))
-#             df.name = filename
-#             return df
-#     except Exception as e:
-#         print(e)
-#         return dash.html.Div(['There was an error processing this file.'])
+def parse_data(contents, filename):
+    content_string = contents.split(',')[1]
+    decoded = base64.b64decode(content_string)
+    try:
+        if "xlsx" in filename:
+            df = pd.read_excel(io.BytesIO(decoded))
+            df.name = filename
+            return df
+    except Exception as e:
+        print(e)
+        return dash.html.Div(['There was an error processing this file.'])
 
 application = app.server
 
