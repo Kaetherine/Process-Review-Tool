@@ -81,61 +81,61 @@ app.layout = dash.html.Div(
     ]
 )
 
-# @application.callback(
-#     Output('selection-source-container', 'style'),
-#     [Input('upload-data', 'contents'),
-#      Input('upload-data', 'filename')]
-# )
-# def upload_callback(contents, filename):
-#     global df
-#     if contents:
-#         contents = contents[0]
-#         filename = filename[0]
-#         df = parse_data(contents, filename)
-#         min_required_columns = len(df) > 2
-#         if min_required_columns:
-#             return dict()
+@app.callback(
+    dash.Output('selection-source-container', 'style'),
+    [dash.Input('upload-data', 'contents'),
+     dash.Input('upload-data', 'filename')]
+)
+def upload_callback(contents, filename):
+    global df
+    if contents:
+        contents = contents[0]
+        filename = filename[0]
+        df = parse_data(contents, filename)
+        min_required_columns = len(df) > 2
+        if min_required_columns:
+            return dict()
+
+@app.callback(
+    dash.Output('selection-source', 'options'),
+    [dash.Input('selection-source-container', 'style')]
+)
+def available_options_changed_callback(style):
+    available_columns = list(df.columns)
+    opts = [{'label': opt, 'value': opt} for opt in available_columns]
+    return opts
+
+def selected_columns_changed_callback(value):
+    '''create diagram only if at leas two columns are selected'''
+    global selected_columns
+    selected_columns = value
+    min_required_columns = len(selected_columns) > 1
+    if min_required_columns:
+        return dict()
+
+for i in range(7):
+    app.callback(
+        dash.Output(f'selection-target-container{i}', 'style'),
+        [dash.Input('selection-source', 'value')]
+    )(selected_columns_changed_callback)
+
+def show_target_options_changed_callback(index, style):
+    if index >= len(selected_columns):
+        return []
+    column_values = df[selected_columns[index]].unique()
+    opts = [{'label': opt, 'value': opt} for opt in column_values]
+    return opts
+
+for i in range(7):
+    app.callback(
+        dash.Output(f'selection-target{i}', 'options'),
+        [dash.Input(f'selection-target-container{i}', 'style')]
+    )(partial(show_target_options_changed_callback, i))
 
 # @application.callback(
-#     Output('selection-source', 'options'),
-#     [Input('selection-source-container', 'style')]
-# )
-# def available_options_changed_callback(style):
-#     available_columns = list(df.columns)
-#     opts = [{'label': opt, 'value': opt} for opt in available_columns]
-#     return opts
-
-# def selected_columns_changed_callback(value):
-#     '''create diagram only if at leas two columns are selected'''
-#     global selected_columns
-#     selected_columns = value
-#     min_required_columns = len(selected_columns) > 1
-#     if min_required_columns:
-#         return dict()
-
-# for i in range(7):
-#     application.callback(
-#         Output(f'selection-target-container{i}', 'style'),
-#         [Input('selection-source', 'value')]
-#     )(selected_columns_changed_callback)
-
-# def show_target_options_changed_callback(index, style):
-#     if index >= len(selected_columns):
-#         return []
-#     column_values = df[selected_columns[index]].unique()
-#     opts = [{'label': opt, 'value': opt} for opt in column_values]
-#     return opts
-
-# for i in range(7):
-#     application.callback(
-#         Output(f'selection-target{i}', 'options'),
-#         [Input(f'selection-target-container{i}', 'style')]
-#     )(partial(show_target_options_changed_callback, i))
-
-# @application.callback(
-#     Output('sankey', 'figure'),
-#     [Input('selection-source', 'value')] + 
-#     [Input(f'selection-target{i}', 'value') for i in range(7)]
+#     dash.Output('sankey', 'figure'),
+#     [dash.nput('selection-source', 'value')] + 
+#     [dash.Input(f'selection-target{i}', 'value') for i in range(7)]
 # )
 # def update_graph(source=None, *filters):
 #     global df, selected_columns
@@ -165,7 +165,7 @@ app.layout = dash.html.Div(
 #             return df
 #     except Exception as e:
 #         print(e)
-#         return html.Div(['There was an error processing this file.'])
+#         return dash.html.Div(['There was an error processing this file.'])
 
 application = app.server
 
