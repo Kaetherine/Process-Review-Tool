@@ -27,59 +27,59 @@ application.layout = dash.html.Div(
                 'top': '2%',
                 'right': '4.2%',
                 }
-            ),
-        dash.dcc.Upload(
-            id='upload-data',
-            children=dash.html.Div(['Drag and Drop or ', dash.html.A('Select Files')]),
-            style={
-                'height': '60px',
-                'lineHeight': '60px',
-                'borderWidth': '1px',
-                'borderStyle': 'dashed',
-                'borderRadius': '5px',
-                'textAlign': 'center',
-                'margin-bottom': '9px',
-            },
-            multiple=True,
-        ),
-        dash.html.Div(className='row', children=[
-            dash.html.Div(
-                [dash.html.Label('Select columns'),
-                 dash.dcc.Dropdown(
-                    id='selection-source',
-                    multi=True,
-                    placeholder='Select the columns you want to visualize',
-                    value=[]
-                ),
-                 ],
-                id='selection-source-container',
-                className='twelve columns pretty_container'
-            ),
-        ]),
-        dash.html.Div(className='row', children=[
-            dash.html.Div(
-                [dash.html.Label(
-                    f'''Filter by {
-                        selected_columns[count] if len(selected_columns) > count else ''
-                        }'''
-                    ),
-                dash.dcc.Dropdown(
-                    id=f'selection-target{count}',
-                    multi=True,
-                    placeholder='Select the row values you want to include',
-                    value=[]
-                ),
-                ],
-                id=f'selection-target-container{count}',
-                className='two columns pretty_container'
-            ) for count in range(7)
-        ]),
-        dash.dcc.Graph(
-        id='sankey',
-        style={'height': '65vh'}
-        )
-    ]
-)
+            )])
+#         dash.dcc.Upload(
+#             id='upload-data',
+#             children=dash.html.Div(['Drag and Drop or ', dash.html.A('Select Files')]),
+#             style={
+#                 'height': '60px',
+#                 'lineHeight': '60px',
+#                 'borderWidth': '1px',
+#                 'borderStyle': 'dashed',
+#                 'borderRadius': '5px',
+#                 'textAlign': 'center',
+#                 'margin-bottom': '9px',
+#             },
+#             multiple=True,
+#         ),
+#         dash.html.Div(className='row', children=[
+#             dash.html.Div(
+#                 [dash.html.Label('Select columns'),
+#                  dash.dcc.Dropdown(
+#                     id='selection-source',
+#                     multi=True,
+#                     placeholder='Select the columns you want to visualize',
+#                     value=[]
+#                 ),
+#                  ],
+#                 id='selection-source-container',
+#                 className='twelve columns pretty_container'
+#             ),
+#         ]),
+#         dash.html.Div(className='row', children=[
+#             dash.html.Div(
+#                 [dash.html.Label(
+#                     f'''Filter by {
+#                         selected_columns[count] if len(selected_columns) > count else ''
+#                         }'''
+#                     ),
+#                 dash.dcc.Dropdown(
+#                     id=f'selection-target{count}',
+#                     multi=True,
+#                     placeholder='Select the row values you want to include',
+#                     value=[]
+#                 ),
+#                 ],
+#                 id=f'selection-target-container{count}',
+#                 className='two columns pretty_container'
+#             ) for count in range(7)
+#         ]),
+#         dash.dcc.Graph(
+#         id='sankey',
+#         style={'height': '65vh'}
+#         )
+#     ]
+# )
 
 # @application.callback(
 #     Output('selection-source-container', 'style'),
