@@ -1,10 +1,10 @@
 import base64
 import io
 from dash import dcc, html, Input, Output, Dash
-from create_sankey_diagram import *
+# from create_sankey_diagram import *
 from functools import partial
 
-return 'hello'
+
 
 # df = pd.DataFrame()
 # available_columns = []
@@ -13,7 +13,7 @@ return 'hello'
 # data = {}
 # filter_values = []
 
-# application = Dash(__name__) 
+application = Dash(__name__) 
 
 # application.layout = html.Div(
     
@@ -166,5 +166,5 @@ return 'hello'
 #         print(e)
 #         return html.Div(['There was an error processing this file.'])
 
-# if __name__ == '__main__':
-#     application.run_server(debug=True, port=8080)
+if __name__ == '__main__':
+    application.run_server(debug=True, port=8080)
