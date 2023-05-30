@@ -3,82 +3,83 @@ import io
 from dash import dcc, html, Input, Output, Dash
 # from create_sankey_diagram import *
 from functools import partial
+import pandas as pd
 
 
 
-# df = pd.DataFrame()
-# available_columns = []
-# linear_bool = True
-# selected_columns = []
-# data = {}
-# filter_values = []
+df = pd.DataFrame()
+available_columns = []
+linear_bool = True
+selected_columns = []
+data = {}
+filter_values = []
 
 application = Dash(__name__) 
 
-# application.layout = html.Div(
+application.layout = html.Div(
     
-#     className='app-body', children=[
-#         html.Img(
-#         src='assets\logo.png',
-#         alt='PwC Logo',
-#         style={'width':'160px',
-#                 'position': 'fixed',
-#                 'top': '2%',
-#                 'right': '4.2%',
-#                 }
-#             ),
-#         dcc.Upload(
-#             id='upload-data',
-#             children=html.Div(['Drag and Drop or ', html.A('Select Files')]),
-#             style={
-#                 'height': '60px',
-#                 'lineHeight': '60px',
-#                 'borderWidth': '1px',
-#                 'borderStyle': 'dashed',
-#                 'borderRadius': '5px',
-#                 'textAlign': 'center',
-#                 'margin-bottom': '9px',
-#             },
-#             multiple=True,
-#         ),
-#         html.Div(className='row', children=[
-#             html.Div(
-#                 [html.Label('Select columns'),
-#                  dcc.Dropdown(
-#                     id='selection-source',
-#                     multi=True,
-#                     placeholder='Select the columns you want to visualize',
-#                     value=[]
-#                 ),
-#                  ],
-#                 id='selection-source-container',
-#                 className='twelve columns pretty_container'
-#             ),
-#         ]),
-#         html.Div(className='row', children=[
-#             html.Div(
-#                 [html.Label(
-#                     f'''Filter by {
-#                         selected_columns[count] if len(selected_columns) > count else ''
-#                         }'''
-#                     ),
-#                 dcc.Dropdown(
-#                     id=f'selection-target{count}',
-#                     multi=True,
-#                     placeholder='Select the row values you want to include',
-#                     value=[]
-#                 ),
-#                 ],
-#                 id=f'selection-target-container{count}',
-#                 className='two columns pretty_container'
-#             ) for count in range(7)
-#         ]),
-#         dcc.Graph(
-#         id='sankey',
-#         style={'height': '65vh'}
-#         )
-#     ]
-# )
+    className='app-body', children=[
+        html.Img(
+        src='assets\logo.png',
+        alt='PwC Logo',
+        style={'width':'160px',
+                'position': 'fixed',
+                'top': '2%',
+                'right': '4.2%',
+                }
+            ),
+        dcc.Upload(
+            id='upload-data',
+            children=html.Div(['Drag and Drop or ', html.A('Select Files')]),
+            style={
+                'height': '60px',
+                'lineHeight': '60px',
+                'borderWidth': '1px',
+                'borderStyle': 'dashed',
+                'borderRadius': '5px',
+                'textAlign': 'center',
+                'margin-bottom': '9px',
+            },
+            multiple=True,
+        ),
+        html.Div(className='row', children=[
+            html.Div(
+                [html.Label('Select columns'),
+                 dcc.Dropdown(
+                    id='selection-source',
+                    multi=True,
+                    placeholder='Select the columns you want to visualize',
+                    value=[]
+                ),
+                 ],
+                id='selection-source-container',
+                className='twelve columns pretty_container'
+            ),
+        ]),
+        html.Div(className='row', children=[
+            html.Div(
+                [html.Label(
+                    f'''Filter by {
+                        selected_columns[count] if len(selected_columns) > count else ''
+                        }'''
+                    ),
+                dcc.Dropdown(
+                    id=f'selection-target{count}',
+                    multi=True,
+                    placeholder='Select the row values you want to include',
+                    value=[]
+                ),
+                ],
+                id=f'selection-target-container{count}',
+                className='two columns pretty_container'
+            ) for count in range(7)
+        ]),
+        dcc.Graph(
+        id='sankey',
+        style={'height': '65vh'}
+        )
+    ]
+)
 
 # @application.callback(
 #     Output('selection-source-container', 'style'),
