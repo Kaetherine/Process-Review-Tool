@@ -14,9 +14,9 @@ selected_columns = []
 data = {}
 filter_values = []
 
-application = dash.Dash(__name__) 
+app = dash.Dash(__name__) 
 
-application.layout = dash.html.Div(
+app.layout = dash.html.Div(
     
     className='app-body', children=[
         dash.html.Img(
@@ -168,4 +168,4 @@ application.layout = dash.html.Div(
 #         return html.Div(['There was an error processing this file.'])
 
 if __name__ == '__main__':
-    application.run_server(debug=True, port=8080)
+    app.run_server(debug=True, port=8080)
