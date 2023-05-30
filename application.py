@@ -167,5 +167,7 @@ app.layout = dash.html.Div(
 #         print(e)
 #         return html.Div(['There was an error processing this file.'])
 
+application = app.server
+
 if __name__ == '__main__':
     app.run(debug=True, port=8080)
