@@ -5,11 +5,7 @@ from create_sankey_diagram import *
 from functools import partial
 
 df = pd.DataFrame()
-available_columns = []
-linear_bool = True
 selected_columns = []
-data = {}
-filter_values = []
 
 app = Dash(__name__) 
 
@@ -56,9 +52,7 @@ app.layout = html.Div(
         html.Div(className='row', children=[
             html.Div(
                 [html.Label(
-                    f'''Filter by {
-                        selected_columns[count] if len(selected_columns) > count else ''
-                        }'''
+                    f'Filter by'
                     ),
                 dcc.Dropdown(
                     id=f'selection-target{count}',
@@ -148,7 +142,7 @@ def update_graph(source=None, *filters):
     if not df.empty:
         title = df.name
     fig = gen_sankey(
-            df, selected_columns=source, filter=filters, linear=linear_bool, title=title
+            df, selected_columns=source, filter=filters, linear=True, title=title
             )
     return fig
 
@@ -165,7 +159,7 @@ def parse_data(contents, filename):
         return html.Div(['There was an error processing this file.'])
 
 
-application = app.server
+# application = app.server
 
 if __name__ == '__main__':
-    application.run(debug=False, port=8080)
+    app.run(debug=True)
