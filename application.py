@@ -4,8 +4,6 @@ from dash import dcc, html, Input, Output, Dash
 from create_sankey_diagram import *
 from functools import partial
 
-selected_columns = []
-
 app = Dash(__name__) 
 
 app.layout = html.Div(
@@ -70,11 +68,12 @@ app.layout = html.Div(
         ),
               dcc.Store(id='store'),
               dcc.Store(id='filename-store'),
+              dcc.Store(id='selected-columns-store'),
     ]
 )
 
 @app.callback(
-    Output('store', 'data'), # output the DataFrame as serialized JSON to the Store
+    Output('store', 'data'),
     Output('filename-store', 'data'),
     [Input('upload-data', 'contents'),
      Input('upload-data', 'filename')]
@@ -86,10 +85,10 @@ def upload_callback(contents, filename):
         df = parse_data(contents, filename)
         return df.to_json(date_format='iso', orient='split'), filename  # convert df to json
 
-# Retrieving the DataFrame from dcc.Store in other callbacks
+
 @app.callback(
     Output('selection-source', 'options'),
-    [Input('store', 'data')]  # retrieve the DataFrame from the Store
+    [Input('store', 'data')]
 )
 def available_options_changed_callback(data):
     df = pd.read_json(data, orient='split') if data else pd.DataFrame()
@@ -97,21 +96,15 @@ def available_options_changed_callback(data):
     opts = [{'label': opt, 'value': opt} for opt in available_columns]
     return opts
 
+@app.callback(
+    Output('selected-columns-store', 'data'),
+    [Input('selection-source', 'value')]
+)
 def selected_columns_changed_callback(value):
-    '''create diagram only if at leas two columns are selected'''
-    global selected_columns
-    selected_columns = value
-    min_required_columns = len(selected_columns) > 1
-    if min_required_columns:
-        return dict()
+    '''create diagram only if at least two columns are selected'''
+    return value
 
-for i in range(7):
-    app.callback(
-        Output(f'selection-target-container{i}', 'style'),
-        [Input('selection-source', 'value')]
-    )(selected_columns_changed_callback)
-
-def show_target_options_changed_callback(index, style, data):
+def show_target_options_changed_callback(index, style, data, selected_columns):
     df = pd.read_json(data, orient='split') if data else pd.DataFrame()
     if index >= len(selected_columns):
         return []
@@ -123,23 +116,24 @@ for i in range(7):
     app.callback(
         Output(f'selection-target{i}', 'options'),
         [Input(f'selection-target-container{i}', 'style'),
-        Input('store', 'data')]
+        Input('store', 'data'),
+        Input('selected-columns-store', 'data')]
     )(partial(show_target_options_changed_callback, i))
 
 @app.callback(
     Output('sankey', 'figure'),
-    [Input('selection-source', 'value'),
-     Input('store', 'data'),
-     Input('filename-store', 'data')] + 
+    [Input('store', 'data'),
+     Input('filename-store', 'data'),
+     Input('selected-columns-store', 'data')] +
     [Input(f'selection-target{i}', 'value') for i in range(7)]
 )
-def update_graph(source=None, data=None, filename=None, *filters):
+def update_graph(data=None, filename=None, selected_columns = None, *filters):
     df = pd.read_json(data, orient='split') if data else pd.DataFrame()
     if filters == ([], [], [], [], [], [], []):
         filters = None
-    if not source:
+    if not selected_columns:
         try:
-            source = list(df.columns)
+            selected_columns = list(df.columns)
         except Exception as e:
             print(e)
 
@@ -147,7 +141,7 @@ def update_graph(source=None, data=None, filename=None, *filters):
     if not df.empty:
         title = filename
     fig = gen_sankey(
-            df, selected_columns=source, filter=filters, linear=True, title=title
+            df, selected_columns=selected_columns, filter=filters, linear=True, title=title
             )
     return fig
 
