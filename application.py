@@ -1,8 +1,9 @@
 import base64
 import io
-from dash import dcc, html, Input, Output, Dash
+from dash import dcc, html, Input, Output, Dash, dash_table
 from create_sankey_diagram import *
 from functools import partial
+
 
 app = Dash(__name__) 
 
@@ -66,9 +67,14 @@ app.layout = html.Div(
         id='sankey',
         style={'height': '65vh'}
         ),
-              dcc.Store(id='store'),
-              dcc.Store(id='filename-store'),
-              dcc.Store(id='selected-columns-store'),
+        dash_table.DataTable(
+    id='table',
+    style_table={'height': '300px', 'overflowY': 'auto'},
+    style_header={'backgroundColor': 'rgb(230, 230, 230)', 'fontWeight': 'bold'},
+    ),
+        dcc.Store(id='store'),
+        dcc.Store(id='filename-store'),
+        dcc.Store(id='selected-columns-store'),
     ]
 )
 
@@ -157,6 +163,17 @@ def parse_data(contents, filename):
         print(e)
         return html.Div(['There was an error processing this file.'])
 
+@app.callback(
+    Output('table', 'data'),
+    Output('table', 'columns'),
+    [Input('store', 'data')]
+)
+def update_table(data):
+    if data is None:
+        return [], []
+    df = pd.read_json(data, orient='split')
+    columns = [{'name': i, 'id': i} for i in df.columns]
+    return df.to_dict('records'), columns
 
 # application = app.server
 
