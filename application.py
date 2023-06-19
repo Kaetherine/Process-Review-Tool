@@ -158,7 +158,7 @@ def parse_data(contents, filename):
         return html.Div(['There was an error processing this file.'])
 
 
-# application = app.server
+application = app.server
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    application.run(debug=False, port='8080')
