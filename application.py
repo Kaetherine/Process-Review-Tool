@@ -100,7 +100,6 @@ def upload_callback(contents, filename):
 def available_options_changed_callback(data):
     df = pd.read_json(data, orient='split') if data else pd.DataFrame()
     available_columns = list(df.columns)
-    available_columns.extend(['Review', 'Comment'])
     opts = [{'label': opt, 'value': opt} for opt in available_columns]
     return opts
 
@@ -161,7 +160,6 @@ def parse_data(contents, filename):
             df = pd.read_excel(io.BytesIO(decoded))
             df['Review'] = 'unknown'
             df['Comment'] = 'no comment'
-            df['last_column'] = None
             df.name = filename
             return df
     except Exception as e:
@@ -179,6 +177,7 @@ def update_table(data, selected_columns):
     if not selected_columns:
         data_cols = json.loads(data)
         data_cols = list(data_cols['columns'])
+        data_cols = data_cols[:-2]
         try:
             selected_columns = data_cols
         except Exception as e:
@@ -188,8 +187,7 @@ def update_table(data, selected_columns):
     columns = [{'name': i, 'id': i} for i in df.columns]
     return df.to_dict('records'), columns
 
-
-# application = app.server
+application = app.server
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    application.run(debug=True, port='8080')
