@@ -90,7 +90,7 @@ def upload_callback(contents, filename):
         contents = contents[0]
         filename = filename[0]
         df = parse_data(contents, filename)
-        return df.to_json(date_format='iso', orient='split'), filename  # convert df to json
+        return df.to_json(date_format='iso', orient='split'), filename
 
 
 @app.callback(
@@ -100,6 +100,7 @@ def upload_callback(contents, filename):
 def available_options_changed_callback(data):
     df = pd.read_json(data, orient='split') if data else pd.DataFrame()
     available_columns = list(df.columns)
+    available_columns.extend(['Review', 'Comment'])
     opts = [{'label': opt, 'value': opt} for opt in available_columns]
     return opts
 
@@ -158,6 +159,9 @@ def parse_data(contents, filename):
     try:
         if "xlsx" in filename:
             df = pd.read_excel(io.BytesIO(decoded))
+            df['Review'] = 'unknown'
+            df['Comment'] = 'no comment'
+            df['last_column'] = None
             df.name = filename
             return df
     except Exception as e:
@@ -171,6 +175,7 @@ def parse_data(contents, filename):
      Input('selected-columns-store', 'data')]
 )
 def update_table(data, selected_columns):
+    print(selected_columns)
     if not selected_columns:
         data_cols = json.loads(data)
         data_cols = list(data_cols['columns'])
@@ -180,15 +185,11 @@ def update_table(data, selected_columns):
             print(e)
     df = pd.read_json(data, orient='split')
     df = df[selected_columns]
-    if 'Review' in selected_columns:
-        df['Review'] = 'unknown'
-    if 'Comment' in selected_columns:
-        df['Comment'] = 'no comment'
     columns = [{'name': i, 'id': i} for i in df.columns]
     return df.to_dict('records'), columns
 
 
-application = app.server
+# application = app.server
 
 if __name__ == '__main__':
-    application.run(debug=False, port='8080')
+    app.run(debug=True)
