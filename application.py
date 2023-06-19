@@ -191,4 +191,4 @@ def update_table(data, selected_columns):
 application = app.server
 
 if __name__ == '__main__':
-    app.run(debug=False, port='8080')
+    application.run(debug=False, port='8080')
