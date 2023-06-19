@@ -2,11 +2,12 @@ import pandas as pd
 
 def gen_sankey(df, selected_columns=None, filter=None, linear=True, title='Sankey Diagram'):
     '''create the sankey diagram based on given params'''
-  
+
     if selected_columns != []:
-        selected_columns.append(selected_columns[-1])
+        selected_columns.append('Review')
 
     if filter != None:
+
         for i in range(len(filter)-1):
             if filter[i] == []:
                 continue
@@ -18,6 +19,7 @@ def gen_sankey(df, selected_columns=None, filter=None, linear=True, title='Sanke
                 if str(col) not in str(value):
                     df.at[index, col] = f'{value} ({col})'
 
+    
     df['count_col'] = [f'count_{x}' for x in range(len(df))]
 
     # Create a list of dataframes with source and target columns

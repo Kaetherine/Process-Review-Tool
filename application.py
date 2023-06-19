@@ -3,7 +3,7 @@ import io
 from dash import dcc, html, Input, Output, Dash, dash_table
 from create_sankey_diagram import *
 from functools import partial
-
+import json
 
 app = Dash(__name__) 
 
@@ -171,18 +171,24 @@ def parse_data(contents, filename):
      Input('selected-columns-store', 'data')]
 )
 def update_table(data, selected_columns):
-    if data is None or not selected_columns:
+    if not selected_columns:
+        data_cols = json.loads(data)
+        data_cols = list(data_cols['columns'])
         try:
-            selected_columns = list(df.columns)
+            selected_columns = data_cols
         except Exception as e:
             print(e)
     df = pd.read_json(data, orient='split')
-    df = df[selected_columns]  # filter dataframe to include only selected columns
+    df = df[selected_columns]
+    if 'Review' in selected_columns:
+        df['Review'] = 'unknown'
+    if 'Comment' in selected_columns:
+        df['Comment'] = 'no comment'
     columns = [{'name': i, 'id': i} for i in df.columns]
     return df.to_dict('records'), columns
 
 
-application = app.server
+# application = app.server
 
 if __name__ == '__main__':
-    application.run(debug=True)
+    app.run(debug=True)
