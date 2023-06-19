@@ -4,7 +4,6 @@ from dash import dcc, html, Input, Output, Dash
 from create_sankey_diagram import *
 from functools import partial
 
-df = pd.DataFrame()
 selected_columns = []
 
 app = Dash(__name__) 
@@ -68,30 +67,32 @@ app.layout = html.Div(
         dcc.Graph(
         id='sankey',
         style={'height': '65vh'}
-        )
+        ),
+              dcc.Store(id='store'),
+              dcc.Store(id='filename-store'),
     ]
 )
 
 @app.callback(
-    Output('selection-source-container', 'style'),
+    Output('store', 'data'), # output the DataFrame as serialized JSON to the Store
+    Output('filename-store', 'data'),
     [Input('upload-data', 'contents'),
      Input('upload-data', 'filename')]
 )
 def upload_callback(contents, filename):
-    global df
     if contents:
         contents = contents[0]
         filename = filename[0]
         df = parse_data(contents, filename)
-        min_required_columns = len(df) > 2
-        if min_required_columns:
-            return dict()
+        return df.to_json(date_format='iso', orient='split'), filename  # convert df to json
 
+# Retrieving the DataFrame from dcc.Store in other callbacks
 @app.callback(
     Output('selection-source', 'options'),
-    [Input('selection-source-container', 'style')]
+    [Input('store', 'data')]  # retrieve the DataFrame from the Store
 )
-def available_options_changed_callback(style):
+def available_options_changed_callback(data):
+    df = pd.read_json(data, orient='split') if data else pd.DataFrame()
     available_columns = list(df.columns)
     opts = [{'label': opt, 'value': opt} for opt in available_columns]
     return opts
@@ -110,7 +111,8 @@ for i in range(7):
         [Input('selection-source', 'value')]
     )(selected_columns_changed_callback)
 
-def show_target_options_changed_callback(index, style):
+def show_target_options_changed_callback(index, style, data):
+    df = pd.read_json(data, orient='split') if data else pd.DataFrame()
     if index >= len(selected_columns):
         return []
     column_values = df[selected_columns[index]].unique()
@@ -120,16 +122,19 @@ def show_target_options_changed_callback(index, style):
 for i in range(7):
     app.callback(
         Output(f'selection-target{i}', 'options'),
-        [Input(f'selection-target-container{i}', 'style')]
+        [Input(f'selection-target-container{i}', 'style'),
+        Input('store', 'data')]
     )(partial(show_target_options_changed_callback, i))
 
 @app.callback(
     Output('sankey', 'figure'),
-    [Input('selection-source', 'value')] + 
+    [Input('selection-source', 'value'),
+     Input('store', 'data'),
+     Input('filename-store', 'data')] + 
     [Input(f'selection-target{i}', 'value') for i in range(7)]
 )
-def update_graph(source=None, *filters):
-    global df, selected_columns
+def update_graph(source=None, data=None, filename=None, *filters):
+    df = pd.read_json(data, orient='split') if data else pd.DataFrame()
     if filters == ([], [], [], [], [], [], []):
         filters = None
     if not source:
@@ -140,7 +145,7 @@ def update_graph(source=None, *filters):
 
     title = 'Sankey Diagram'
     if not df.empty:
-        title = df.name
+        title = filename
     fig = gen_sankey(
             df, selected_columns=source, filter=filters, linear=True, title=title
             )
