@@ -68,10 +68,11 @@ app.layout = html.Div(
         style={'height': '65vh'}
         ),
         dash_table.DataTable(
-    id='table',
-    style_table={'height': '300px', 'overflowY': 'auto'},
-    style_header={'backgroundColor': 'rgb(230, 230, 230)', 'fontWeight': 'bold'},
-    ),
+            id='table',
+            style_table={'height': '300px', 'overflowY': 'auto'},
+            style_header={'backgroundColor': 'rgb(230, 230, 230)', 'fontWeight': 'bold'},
+            editable=True,
+        ),
         dcc.Store(id='store'),
         dcc.Store(id='filename-store'),
         dcc.Store(id='selected-columns-store'),
