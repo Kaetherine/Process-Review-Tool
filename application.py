@@ -166,14 +166,20 @@ def parse_data(contents, filename):
 @app.callback(
     Output('table', 'data'),
     Output('table', 'columns'),
-    [Input('store', 'data')]
+    [Input('store', 'data'),
+     Input('selected-columns-store', 'data')]
 )
-def update_table(data):
-    if data is None:
-        return [], []
+def update_table(data, selected_columns):
+    if data is None or not selected_columns:
+        try:
+            selected_columns = list(df.columns)
+        except Exception as e:
+            print(e)
     df = pd.read_json(data, orient='split')
+    df = df[selected_columns]  # filter dataframe to include only selected columns
     columns = [{'name': i, 'id': i} for i in df.columns]
     return df.to_dict('records'), columns
+
 
 # application = app.server
 
