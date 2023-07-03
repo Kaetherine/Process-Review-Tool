@@ -173,7 +173,6 @@ def parse_data(contents, filename):
      Input('selected-columns-store', 'data')]
 )
 def update_table(data, selected_columns):
-    print(selected_columns)
     if not selected_columns:
         data_cols = json.loads(data)
         data_cols = list(data_cols['columns'])
@@ -187,7 +186,11 @@ def update_table(data, selected_columns):
     columns = [{'name': i, 'id': i} for i in df.columns]
     return df.to_dict('records'), columns
 
-application = app.server
+# application = app.server
 
 if __name__ == '__main__':
-    application.run(debug=True, port='8080')
+    app.run(
+        debug=True,
+        # port='8080'
+    )
+        
