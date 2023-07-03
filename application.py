@@ -198,11 +198,11 @@ def update_table(data, selected_columns):
     columns = [{'name': i, 'id': i} for i in df.columns]
     return df.to_dict('records'), columns
 
-# application = app.server
+application = app.server
 
 if __name__ == '__main__':
-    app.run(
+    application.run(
         debug=True,
-        # port='8080'
+        port='8080'
     )
         
