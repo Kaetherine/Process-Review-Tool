@@ -1,5 +1,14 @@
-# Process-Review-Tool/ Sankey Diagram Generator
-A detailed introduction to the Problem and it's solution can be found here: https://drive.google.com/file/d/11xXN_69VGJmS-o0dwA8FyAWD1GqJYQW2/view?usp=drivesdk
+# Process-Review-Tool/ Sankey Diagram Generator (work in progress)
+
+Visualize your excelsheet with the following requirements here: http://process-review-tool.eu-north-1.elasticbeanstalk.com/
+
+Requirements:
+1. suffix is xlsx
+2. excelfile contains only one sheet
+3. line 1 and column 1 are not empty
+4. there are no joined cells in the sheet
+   
+A detailed introduction to the usecase the prorcess review tool was created for can be found here: https://drive.google.com/file/d/11xXN_69VGJmS-o0dwA8FyAWD1GqJYQW2/view?usp=drivesdk
 
 This interactive Sankey diagram generator is a Dash-based Python application that allows users to visualize relationships between columns in their dataset. The application reads Excel files and presents an interactive interface for selecting columns, filtering data, and generating the Sankey diagram.
 ![image](https://user-images.githubusercontent.com/81876912/236634270-c1420de9-796c-4c06-9996-45e9544c6695.png)
