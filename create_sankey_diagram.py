@@ -4,13 +4,14 @@ def gen_sankey(df, selected_columns=None, filter=None,
                     linear=True, title='Sankey Diagram'):
     '''create the sankey diagram based on given params'''
 
+    df = df.copy()
+
     if selected_columns == list(df.columns):
         selected_columns = selected_columns[:-1]
     else:
         selected_columns.append(selected_columns[-1])
 
     if filter != None:
-
         for i in range(len(filter)-1):
             if filter[i] == []:
                 continue
@@ -18,12 +19,12 @@ def gen_sankey(df, selected_columns=None, filter=None,
  
     if linear:
         for col in list(df.columns):
-            for index, value in enumerate(df[col]):
+            for index, value in df[col].items():
                 if str(col) not in str(value):
-                    df.at[index, col] = f'{value} ({col})'
+                    df.loc[index, col] = f'{value} ({col})'
 
-    
     df['count_col'] = [f'count_{x}' for x in range(len(df))]
+
 
     # Create a list of dataframes with source and target columns
     dfs = []
