@@ -21,7 +21,10 @@ app.layout = html.Div(
             ),
         dcc.Upload(
             id='upload-data',
-            children=html.Div(['Drag and Drop or ', html.A('Select Files')]),
+            children=html.Div([
+                'Drag and Drop or ',
+                html.A('Select Files')
+                ]),
             style={
                 'height': '60px',
                 'lineHeight': '60px',
@@ -70,7 +73,10 @@ app.layout = html.Div(
         dash_table.DataTable(
             id='table',
             style_table={'height': '300px', 'overflowY': 'auto'},
-            style_header={'backgroundColor': 'rgb(230, 230, 230)', 'fontWeight': 'bold'},
+            style_header={
+                'backgroundColor': 'rgb(230, 230, 230)',
+                'fontWeight': 'bold'
+                },
             editable=True,
         ),
         dcc.Store(id='store'),
@@ -90,7 +96,9 @@ def upload_callback(contents, filename):
         contents = contents[0]
         filename = filename[0]
         df = parse_data(contents, filename)
-        return df.to_json(date_format='iso', orient='split'), filename
+        return df.to_json(
+            date_format='iso',
+            orient='split'),filename
 
 
 @app.callback(
@@ -148,7 +156,11 @@ def update_graph(data=None, filename=None, selected_columns = None, *filters):
     if not df.empty:
         title = filename
     fig = gen_sankey(
-            df, selected_columns=selected_columns, filter=filters, linear=True, title=title
+            df,
+            selected_columns=selected_columns,
+            filter=filters,
+            linear=True,
+            title=title
             )
     return fig
 
