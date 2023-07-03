@@ -1,6 +1,7 @@
 import pandas as pd
 
-def gen_sankey(df, selected_columns=None, filter=None, linear=True, title='Sankey Diagram'):
+def gen_sankey(df, selected_columns=None, filter=None,
+                    linear=True, title='Sankey Diagram'):
     '''create the sankey diagram based on given params'''
 
     if selected_columns == list(df.columns):
@@ -28,20 +29,25 @@ def gen_sankey(df, selected_columns=None, filter=None, linear=True, title='Sanke
     dfs = []
     for column in selected_columns:
         i = selected_columns.index(column)+1
-        if column == selected_columns[-1] or column == selected_columns[-2] or column == 'count_col':
+        if (column == selected_columns[-1] or
+            column == selected_columns[-2] or
+            column == 'count_col'
+            ):
             continue
         else:
             try:
-                dfx = df.groupby([column, selected_columns[i]])['count_col'].count().reset_index()
+                dfx = df.groupby([column, selected_columns[i]])
+                dfx = dfx['count_col'].count().reset_index()
                 dfx.columns = ['source', 'target', 'count']
                 dfs.append(dfx)
             except Exception as e:
                 print(f'columnname: {column}\n{repr(e)}')
 
     # Concatenate dataframes
-    # if not df.empty:
     links = pd.concat(dfs, axis=0)
-    unique_source_target = list(pd.unique(links[['source', 'target']].values.ravel('K')))
+    unique_source_target = list(
+        pd.unique(links[['source', 'target']].values.ravel('K'))
+        )
     mapping_dict = {k: v for v, k in enumerate(unique_source_target)}
     links['source'] = links['source'].map(mapping_dict)
     links['target'] = links['target'].map(mapping_dict)
