@@ -12,7 +12,7 @@ app.layout = html.Div(
     className='app-body', children=[
         html.Img(
         src='assets\logo.png',
-        alt='PwC Logo',
+        alt='Logo',
         style={'width':'160px',
                 'position': 'fixed',
                 'top': '2%',
@@ -22,8 +22,8 @@ app.layout = html.Div(
         dcc.Upload(
             id='upload-data',
             children=html.Div([
-                'Drag and Drop or ',
-                html.A('Select Excel Files')
+                'Drag and Drop or Select',
+                html.A('Excel')
                 ]),
             style={
                 'height': '60px',
