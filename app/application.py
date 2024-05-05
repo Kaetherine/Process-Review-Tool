@@ -22,8 +22,8 @@ app.layout = html.Div(
         dcc.Upload(
             id='upload-data',
             children=html.Div([
-                'Drag and Drop or Select',
-                html.A('Excel')
+                'Drag and Drop or Select an ',
+                html.A('Excel-File')
                 ]),
             style={
                 'height': '60px',
@@ -202,6 +202,7 @@ application = app.server
 
 if __name__ == '__main__':
     application.run(
-        debug=True,
-        port='8080'
+        debug=False,
+        host = '0.0.0.0',
+        port='8050'
     )
